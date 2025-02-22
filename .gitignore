@@ -122,3 +122,7 @@ instance/
 
 # VS Code
 .vscode/
+
+# Ignore database and status files
+db.json
+timer_status.json
