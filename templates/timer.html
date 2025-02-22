@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>Timer</title>
+    <link rel="stylesheet" href="/static/global.css">
+    <link rel="stylesheet" href="/static/register_styles.css">
+    <link rel="stylesheet" href="/static/timer_styles.css">
+    <script>
+        let sniffer = null;
+        let previousStatus = null; // Para armazenar o valor anterior da chave "status"
+
+        // Função para verificar alterações no JSON
+        async function checkForStatusUpdates() {
+            try {
+                const response = await fetch('/file.json', {
+                    cache: 'no-cache' // Garante que a resposta não será armazenada em cache             
+                });
+
+                console.log(response)
+
+                if (!response.ok) {
+                    console.error('Erro ao buscar o JSON:', response.statusText);
+                    return;
+                }
+
+                const currentData = await response.json();
+
+                // Verifica se a chave "status" existe no JSON
+                if (!currentData.hasOwnProperty('stop')) {
+                    console.error('A chave "status" não foi encontrada no JSON.');
+                    return;
+                }
+
+                const currentStatus = currentData.stop;
+
+                // Verifica se o valor da chave "status" é 0 ou 1
+                if (currentStatus !== 0) {
+                    console.error('O valor de "status" é:', currentStatus);
+                    window.location.href = '/obrigado';
+                }
+            } catch (error) {
+                console.error('Erro ao verificar o JSON:', error);
+            }
+        }
+        
+        let intervalID = setInterval(checkForStatusUpdates, 250);
+     </script>
+</head>
+<body>
+    <div class="logo">
+        <img src="/static/images/logo.png" alt="Logo Ciclic">
+    </div>
+    
+    <div class="content">
+        <div class="wrap">
+            <div class="description">
+                <img src="/static/images/timer/ja_comecou.png" alt="O jogo já comecou, boa sorte!">
+                <main class="timer-container">
+                    <img src="/static/images/timer/tempo.png" alt="">
+                    <span class="timer" id="timer">{{playtime}}s</span>
+                </main>
+            </div>
+            <div class="unicorn">
+                <img src="/static/images/timer/imagem.png" alt="Unicornio">
+            </div>
+        </div>
+    </div>
+
+    <script type="application/javascript">   
+    
+        /*let sniffer = null;
+        let previousStatus = null; // Para armazenar o valor anterior da chave "status"
+
+        // Função para verificar alterações no JSON
+        async function checkForStatusUpdates() {
+            try {
+                const response = await fetch('/file.json', {
+                    cache: 'no-cache' // Garante que a resposta não será armazenada em cache             
+                });
+
+                console.log(response)
+
+                if (!response.ok) {
+                    console.error('Erro ao buscar o JSON:', response.statusText);
+                    return;
+                }
+
+                const currentData = await response.json();
+
+                // Verifica se a chave "status" existe no JSON
+                if (!currentData.hasOwnProperty('status')) {
+                    console.error('A chave "status" não foi encontrada no JSON.');
+                    return;
+                }
+
+                const currentStatus = currentData.status;
+
+                // Verifica se o valor da chave "status" é 0 ou 1
+                if (currentStatus !== 0) {
+                    console.error('O valor de "status" é:', currentStatus);
+                    const timerElement = document.getElementById("timer");
+            
+                    let timerCounter = "{{playtime}}";
+                    clearInterval(intervalID);
+
+                    const interval = setInterval(() => {
+                        if (timerCounter <= 0) {
+                            clearInterval(interval);
+                            window.location.href = '/obrigado';
+                            return;
+                        }
+
+                        timerCounter = timerCounter - 1;
+                        timerElement.innerText = timerCounter + "s";
+                    }, 1000);
+                    return;
+                }
+            } catch (error) {
+                console.error('Erro ao verificar o JSON:', error);
+            }
+        }
+        
+        let intervalID = setInterval(checkForStatusUpdates, 200);*/
+
+
+            const timerElement = document.getElementById("timer");
+            
+            let timerCounter = "{{playtime}}";
+
+            const interval = setInterval(() => {
+                if (timerCounter <= 1) {
+                    window.location.href = '/obrigado';
+                    clearInterval(interval);
+                }
+
+                timerCounter = timerCounter - 1;
+                timerElement.innerText = timerCounter + "s";
+            }, 1000);
+    </script>
+</body>
+</html>

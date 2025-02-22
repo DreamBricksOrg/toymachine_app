@@ -1,0 +1,66 @@
+@font-face {
+    font-family: 'OscineRg';
+    src: url('/static/font/Oscine_Rg.ttf');
+  }
+
+@font-face {
+font-family: 'OscineXBold';
+src: url('/static/font/Oscine_XBd.ttf');
+}
+
+body {
+    font-family: OscineRG;
+}
+
+h1 {
+    font-size: 45px;
+    margin-left: 30px;
+}
+
+h2 {
+    margin-left: 90px;
+}
+
+p {
+    margin: 20px 120px 10px;
+}
+
+a {
+    color: #1d1d1d;
+    font-size: 20px;
+    position: absolute;
+    bottom: 30px;
+}
+
+form {
+    display: flex;
+    flex-flow: column;
+} 
+
+button {
+    width: 25%;
+    height: 50px;
+    font-size: 25px;
+    font-family: OscineXBold;
+    color: #1d1d1d;
+    margin: 20px 60px 10px;
+    border-radius: 10px;
+    border: transparent;
+    background-color: rgb(72, 255, 17);
+}
+
+.start-game {
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.back {
+    right: 30px;
+    font-size: 30px;
+}
+
+.oos {
+    left: 30px;
+    font-size: 30px;
+}

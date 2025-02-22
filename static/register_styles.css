@@ -1,0 +1,236 @@
+@font-face {
+    font-family: 'OscineRg';
+    src: url('/static/font/Oscine_Rg.ttf');
+  }
+
+body, html {
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+img {
+    max-width: 100%;
+}
+
+form {
+    display: flex;
+    margin: 2% auto;
+    width: 90%;
+    height: 100%;
+    border-radius: 5px;
+}
+
+form p {
+    display: flex;
+    margin: 1% 0;
+    background-color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 1.5% 2% 1.5%;
+    height: 50%;
+    color: #1d1d1d;
+}
+
+label {
+    margin: 0;
+    font-family: OscineRg;
+    font-size: 120%;
+    color: #1d1d1d;
+}
+
+input[type="text"], input[type="email"], input[type="number"] {
+    font-family: OscineRg;
+    font-size: 140%;
+    color: #1d1d1d;
+    width: 80%;
+    height: 100%;
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    float: right;
+}
+
+input[type=checkbox] {
+    display: none;
+}
+
+input[type=checkbox]:checked + .custom-checkbox {
+    background: url("/static/images/4/checked.svg") no-repeat left center;
+}
+
+textarea:focus, input:focus{
+    outline: none;
+    
+}
+
+button {
+    display: block;
+    color: #1d1d1d;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.warning, .disclaimer {
+    font-family: OscineRg;
+    background-color: transparent;
+}
+
+.disclaimer {
+    color: #1d1d1d;
+    position: absolute;
+    bottom: 45%;
+    margin-left: 5%;
+}
+
+.warning {
+    color: #f44336;
+    position: absolute;
+    width: 100%;
+    height: 40px;
+    bottom: 80%;
+    margin-left: 5%;
+}
+
+.email-buttons {
+    display: none;
+    margin: 5px 60px 10px;
+    position: absolute;
+    top: 280px;
+    background-color: transparent;
+}
+
+.email-buttons button {
+    margin-left: 10px;
+    background-color: #00F73B;
+    padding: 10px 15px;
+    border-radius: 15px;
+}
+    
+.submit-container {
+    position: absolute;
+    bottom: 5%;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.tos-button {
+    margin-top: 1%;
+    color: #1d1d1d;
+    font-size: 130%;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    padding: 0.4em;
+    margin-right: 2%;
+    background: url("/static/images/4/unchecked.svg") no-repeat left center;
+    /* padding-left: 15px; */
+}
+
+.call {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-top: 3%;
+}
+
+.call img {
+    width: 45%;
+}
+
+.users {
+    width: 100%;
+    height: 40%;
+    padding: 0;
+}
+
+.basic-data {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+    padding: 0 2%;
+}
+
+.servicos {
+    display: flex;
+    flex-flow: column;
+    width: 80%;
+    padding: 2%;
+}
+
+.servicos img {
+    flex: 0 1 auto;
+    width: 85%;
+}
+
+.servicos-container {
+    flex: 1 1 auto;
+    display: flex;
+    width: 100%;
+    margin-top: 3%;
+}
+
+.servicos-col-left {
+    width: 45%;
+    float: left;
+}
+
+.servicos-col-right {
+    width: 65%;
+    float: right;
+}
+
+.checkbox-label {
+    font-size: 120%;
+}
+
+.termos {
+    width: 70%;
+    font-style: italic;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.tos {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Fundo semitransparente */
+    display: none;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+.tos-content {
+    background-color: white;
+    padding: 2em;
+    max-width: 80%;
+    max-height: 80%;
+    overflow-y: scroll;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
+
+.close-popup {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    margin-top: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    display: block;
+}
+
+.close-popup:hover {
+    background-color: #d32f2f;
+}

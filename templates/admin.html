@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title>Produtos</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="static/global.css">
+    <link rel="stylesheet" href="/static/admin_styles.css">
+    <script src="/static/idle_redirect.js"></script>
+</head>
+<body>
+    <h1>Gerenciar máquina</h1>
+
+    <form action="" method="post">
+        <h2>Dispositivo detectado:</h2>
+        {% if devices %}
+            <p> {{ devices }} </p>
+        {% else %}
+            <p>Nenhum dispositivo encontrado</p>
+        {% endif %}
+        <button type="submit" name="submit_button" value="copy">Copiar dados</button>
+        <button class="start-game" type="submit" name="submit_button" value="start">Liberar jogo</button>
+    </form>
+
+    <a class="oos" href="/foradeservico">Fora de serviço</a>
+
+    <a class="back" href="/">Voltar</a>
+</body>
+</html>

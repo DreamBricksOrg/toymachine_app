@@ -1,0 +1,28 @@
+@font-face {
+    font-family: 'OscineXBold';
+    src: url('/static/font/Oscine_XBd.ttf');
+  }
+
+@font-face {
+font-family: 'OscineRg';
+src: url('/static/font/Oscine_Rg.ttf');
+}
+
+img {
+    max-width: 100%;
+}
+
+h1, p {
+    text-align: center;
+}
+
+h1 {
+    font-family: OscineXBold;
+    font-size: 300%;
+    margin-top: 10%;
+}
+ 
+p {
+    font-family: OscineRg;
+    font-size: 250%;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+        <title>Cadastre-se</title>
+        <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}"> -->
+        <link rel="manifest" href="/manifest.json">
+        <link rel="stylesheet" href="static/global.css">
+        <link rel="stylesheet" href="static\index_styles.css">
+        <script>
+            function goto(){
+                location.href = "/timer"
+            }
+         </script>
+
+         <script>
+            let sniffer = null;
+            let previousStatus = null; // Para armazenar o valor anterior da chave "status"
+
+            // Função para verificar alterações no JSON
+            async function checkForStatusUpdates() {
+                try {
+                    const response = await fetch('/file.json', {
+                        cache: 'no-cache' // Garante que a resposta não será armazenada em cache             
+                    });
+
+                    console.log(response)
+
+                    if (!response.ok) {
+                        console.error('Erro ao buscar o JSON:', response.statusText);
+                        return;
+                    }
+
+                    const currentData = await response.json();
+
+                    // Verifica se a chave "status" existe no JSON
+                    if (!currentData.hasOwnProperty('status')) {
+                        console.error('A chave "status" não foi encontrada no JSON.');
+                        return;
+                    }
+
+                    const currentStatus = currentData.status;
+
+                    // Verifica se o valor da chave "status" é 0 ou 1
+                    if (currentStatus !== 0) {
+                        console.error('O valor de "status" é:', currentStatus);
+                        window.location.href = '/timer';
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar o JSON:', error);
+                }
+            }
+            
+            let intervalID = setInterval(checkForStatusUpdates, 250);
+         </script>
+    </head>
+    <body class="enterPage"  onclick="goto();">
+        <div class="logo">
+            <img src="/static/images/logo.png" alt="Logo Ciclic">
+        </div>
+        <div class="cta-container">
+            <img src="/static/images/5/maquina_liberada_texto.png" alt="Clique para garantir seu brinde ou desconto">
+        </div>
+        <img class="souvenirs" src="/static/images/5/Brindes.png" alt="Brindes">
+    </body>
+</html>

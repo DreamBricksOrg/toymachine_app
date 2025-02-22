@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover, interactive-widget=overlays-content"/>
+        <title>Cadastro</title>
+        <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}"> -->
+        <link rel="stylesheet" href="static/global.css">
+        <link rel="stylesheet" href="/static/register_styles.css">
+        <script src="/static/idle_redirect.js"></script>
+    </head>
+    <body>
+
+        <div class="logo">
+            <img src="/static/images/logo.png" alt="Logo Ciclic">
+        </div>
+        
+        <div class="call"><img src="/static/images/4/Preencha_texto.png" alt="Preencha seus dados para garantir seu brinde de desconto"></div>
+        
+        <div class="users">
+            <form method="post" action="" id="form">
+                <div class="basic-data">
+                    <p onclick="hideButton()">
+                        <label for="users">Nome:</label>
+                        <input type="text" name="user" autocomplete="off" required>
+                    </p>
+                    <p>
+                        <label for="users">E-mail:</label>
+                        <input type="email" id="email" name="email" autocomplete="off" required>
+                    </p>
+                    <p>
+                        <label for="cellphone">WhatsApp:</label>
+                        <input type="text" inputmode="tel" id="cellphone" name="cellphone" autocomplete="off" required>
+                    </p>
+                    <p>
+                        <label for="cpf">CPF:</label>
+                        <input type="text" inputmode="numeric" id="cpf" name="cpf" autocomplete="off" required pattern="(\d{3}\.?\d{3}\.?\d{3}-?\d{2})|(\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})">
+                    </p>
+                </div>
+
+                <div class="servicos">
+                    <img src="/static/images/4/qual_proteçao_texto.png" alt="">
+                    
+                    <div class="servicos-container">
+                        <div class="servicos-col-left">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="viagem">
+                                <span class="custom-checkbox"></span>Seguro Viagem
+                            </label><br>
+                    
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="saude">
+                                <span class="custom-checkbox"></span>Saúde Protegida
+                            </label><br>
+                    
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="bike">
+                                <span class="custom-checkbox"></span>Seguro Bike
+                            </label><br>
+                        </div>
+                        
+                        <div class="servicos-col-right">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="celular">
+                                <span class="custom-checkbox"></span>Seguro Celular e Portáteis
+                            </label><br>
+                    
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="residencial">
+                                <span class="custom-checkbox"></span>Seguro Residencial
+                            </label><br>
+                    
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="protections" value="emprestimo">
+                                <span class="custom-checkbox"></span>Empréstimo Pessoal
+                            </label><br><br>
+                        </div>
+                    </div>
+
+                    <label class="checkbox-label termos" id="termos">
+                        <input type="checkbox" name="termos" value="termos" id="toscheckbox">
+                        <span class="custom-checkbox"></span>Li e concordo com os termos de uso e política de privacidade.
+                    </label>
+                </div>
+
+                
+
+                <div class="submit-container" id="submit-container">
+                    <p class="disclaimer">*Válido 1 brinde ou desconto por CPF</p>
+
+                    {% if message %}
+                    <p class="warning">{{message}}</p>
+                    {% endif %}
+                    <button type="submit"><img src="/static/images/4/quero_meu_brinde.png" alt=""></button>
+                    <button class="tos-button" type="button" onclick="openPopup()"> <u>Ler os termos</u> </button>
+                </div>
+                
+            </form>
+
+
+                <div class="tos" id="tos">
+                    <div class="tos-content">
+                        <h1>Termos de uso e privacidade.</h1>
+                        
+                        <h2>1. Objeto</h2>
+
+                        <p class="corpo">Estes Termos e Condições Gerais de Uso, Venda de Produtos e Prestação de Serviços (“Termos e Condições Gerais”) contêm as regras gerais para a utilização do website, redes sociais, aplicativos e/ou softwares da CICLIC (“plataformas”) utilizadas para a aquisição de produtos e contratação de serviços de suas empresas parceiras.
+
+                        As plataformas são operadas pela CICLIC, que é titular da propriedade intelectual sobre o software, website, aplicativos, conteúdos e demais ativos a elas relacionados.
+
+                        As plataformas têm como objeto a prestação de serviços institucionais de acesso a conteúdos explicativos sobre as atividades da CICLIC, através do ícone “Sobre Nós”, visualização e leitura das Políticas, área de contato para solicitação de informações, envio de críticas, sugestões, reclamações, denúncias e elogios.
+
+                        As plataformas têm como objeto, ainda, a prestação de serviços de divulgação e indicação para contratação de produtos e/ou serviços, informação sobre parcerias, autocontratação, utilização de dados para cadastro, acesso, coleta de dados que poderão ser utilizados para consultas de informações sobre crédito a terceiros e a utilização como meios variados de comunicação entre a CICLIC e seus usuários para o exercício de direitos e obrigações decorrentes destas atividades.
+
+                        A coleta de dados dos Usuários ocorrerá a partir do momento da realização do seu respectivo CADASTRO, nos termos da Política de Privacidade da CICLIC, da qual estes Termos e Condições Gerais são complementares. Para visualizar a Política de Privacidade, consulte este link: https://www.ciclic.com.br/politica-de-privacidade/.
+                        </p>
+
+                        <h2>2. Aceitação</h2>
+
+                        <p>Este documento estabelece obrigações contratadas de livre e espontânea vontade, por tempo indeterminado, entre as plataformas e seus Usuários.
+
+                        Ao utilizar as plataformas, o Usuário aceita integralmente as regras aqui descritas e compromete-se a observá-las, sob risco de aplicação das penalidade cabíveis.
+
+                        A aceitação do presente instrumento é imprescindível para o acesso e para a utilização de quaisquer produtos ou serviços intermediados pela CICLIC. Caso não concorde com as disposições deste instrumento, o Usuário não deve utilizá-los.
+                        </p>
+
+                        <h2>3. Acesso</h2>
+
+                        <p>A CICLIC oferece, através das plataformas, a divulgação e contratação de produtos e serviços, comercializados por seguradoras (“Seguradoras”), instituições financeiras parceiras (“Instituições”) e demais parceiros fornecedores de serviços e/ou benefícios aos Usuários.
+
+                        Serão utilizadas todas as soluções técnicas à disposição do responsável pelas plataformas para permitir o acesso ao serviço 24 (vinte e quatro) horas por dia, 7 (sete) dias por semana . No entanto, a navegação nas plataformas ou em algumas de suas páginas poderá ser interrompida, limitada ou suspensa para atualizações, modificações ou qualquer ação necessária ao seu bom funcionamento.
+                        </p>
+
+                        <h2>4.Cadastro</h2>
+
+                        <p>O acesso às funcionalidades das plataformas exigirá a realização de um cadastro prévio e, a depender dos serviços ou produtos escolhidos, o pagamento de determinado valor.
+
+                        Ao se cadastrar, o Usuário deverá informar dados pessoais completos, recentes e válidos, sendo de sua exclusiva responsabilidade manter referidos dados atualizados, bem como garantir a veracidade dos dados fornecidos. O acesso às plataformas será realizado mediante criação e utilização de login e senha pessoais.
+
+                        O Usuário se compromete a não informar seus dados cadastrais e/ou de acesso à plataforma a terceiros, responsabilizando-se integralmente pelo uso que deles seja feito.
+
+                        Menores de 18 anos e aqueles que não possuírem plena capacidade civil deverão obter previamente o consentimento expresso de seus responsáveis legais para utilização da plataforma e dos serviços ou produtos, sendo de responsabilidade exclusiva dos mesmos o eventual acesso por menores de idade e por aqueles que não possuem plena capacidade civil sem a prévia autorização.
+
+                        Mediante a realização do cadastro o Usuário declara e garante expressamente ser plenamente capaz, podendo exercer e usufruir livremente dos serviços e produtos.
+
+                        O Usuário deverá fornecer um endereço de e-mail válido, através do qual a CICLIC realizará todas as comunicações necessárias.
+
+                        Após a confirmação do cadastro, o Usuário possuirá um login e uma senha pessoal, os quais assegurarão acesso individual às plataformas. Desta forma, compete ao Usuário exclusivamente a manutenção de referida senha de maneira confidencial e segura, evitando o acesso indevido às informações pessoais.
+
+                        Toda e qualquer atividade realizada com o uso da senha será de responsabilidade do Usuário, que deverá alterá-la imediatamente e informar prontamente aos gestores das plataformas em caso de violação legal, através dos canais de comunicação disponibilizados pela CICLIC.
+
+                        Não será permitido ceder, vender, alugar ou transferir, de qualquer forma, a conta de acesso, que é pessoal e intransferível.
+
+                        Caberá ao Usuário assegurar que o seu equipamento seja compatível com as características técnicas que viabilize a utilização das plataformas e dos serviços ou produtos.
+
+                        O Usuário poderá, a qualquer tempo, requerer o cancelamento de seu cadastro junto às plataformas. O seu descadastramento será realizado o mais rapidamente possível.
+
+                        Ao acessar as plataformas, o Usuário aceita os termos e condições da Política de Privacidade e destes Termo e Condições Gerais, autoriza expressamente a CICLIC, através das plataformas, a coletar, usar, armazenar, tratar, ceder ou utilizar as informações derivadas da aquisição de produtos e/ou do uso dos serviços, do site e quaisquer plataformas, incluindo todas as informações preenchidas pelo Usuário no momento em que realizar ou atualizar seu cadastro, além de outras expressamente descritas na Política de Privacidade e nestes Termos, que ficam, desde já, autorizadas pelo Usuário.
+                        </p>
+
+                        <h2>5. Serviços ou Produtos</h2>
+
+                        <p>As plataformas poderão disponibilizar para o Usuário um conjunto específico de funcionalidades e ferramentas para otimizar o uso dos serviços e produtos.
+
+                        Nas plataformas, os serviços ou produtos oferecidos estão descritos e apresentados e contêm informações e/ou links de acesso às plataformas das empresas parceiras com informações sobre suas características, qualidades, quantidades, composição, preço, garantia e prazos de vigência, entre outros dados, bem como sobre as hipóteses de exclusão de cobertura e riscos que apresentam aos proponentes.
+
+                        Antes de finalizar a indicação de negócios sobre determinado produto ou serviço, o Usuário deverá se informar sobre as suas especificações e sobre a sua destinação diretamente com a CICLIC.
+                        </p>
+
+                        <h2>6. Preços</h2>
+
+                        <p>A CICLIC se reserva o direito de reajustar unilateralmente, a qualquer tempo, os valores dos serviços ou produtos constantes das plataformas, sem consulta ou anuência prévia do Usuário.
+
+                        Os valores aplicados são aqueles que estão em vigor no momento da contratação ou pedido.
+
+                        Os preços são indicados em reais.
+
+                        Na contratação de determinado serviço ou produto, as plataformas poderão solicitar as informações financeiras do usuário, como CPF, endereço de cobrança e dados bancários e/ou de cartões. Ao inserir referidos dados, o proponente concorda que sejam cobrados, de acordo com a forma de pagamento que venha a ser escolhida, os preços então vigentes e informados quando da contratação. Referidos dados financeiros poderão ser armazenados para facilitar acessos, consultas de informações de crédito perante terceiros e contratações futuras.
+                        </p>
+
+                        <h2>7. Responsabilidades</h2>
+
+                        <p>É de responsabilidade do Usuário:
+
+                            defeitos ou vícios técnicos originados em seu próprio sistema ou equipamento;
+
+                            cumprimento e respeito ao conjunto de regras disposto nesses Termos e Condições Gerais, na respectiva Política de Privacidade e na legislação nacional e internacional aplicável;
+
+                            correta utilização das plataformas, dos serviços ou produtos oferecidos, prezando pela boa convivência, respeito e cordialidade entre os Usuários;
+
+                            proteção aos dados de acesso à sua conta/perfil (login e senha).
+
+
+                        É de responsabilidade da CICLIC nas plataformas:
+
+                            a) indicar as características dos serviços ou produtos;
+
+                            b) os defeitos e vícios na divulgação e intermediação dos produtos e serviços, desde que lhes tenha dado causa;
+
+                            c) as informações que foram por ela divulgadas, sendo que os comentários ou informações divulgadas por Usuários são de inteira responsabilidade destes;
+
+
+                        À exceção do quanto descrito nos itens acima, a CICLIC não se responsabiliza, em qualquer hipótese, por quaisquer danos, materiais ou morais, causados ou sofridos no uso das plataformas.
+
+                        A CICLIC não é gestora de produtos securitários e financeiros e, portanto, não é responsável por eventual falha de cobertura ou insucesso financeiro dos proponentes e/ou segurados. Todas as Seguradoras e Instituições contam com profissionais devidamente formados e certificados pelos órgãos correspondentes para comercializar seus produtos e serviços. Por isso, a responsabilidade pelo cumprimento da legislação referente a estes produtos e serviços cabe integralmente aos parceiros.
+
+                        A CICLIC utiliza serviços de terceiros para manter o funcionamento das plataformas, como servidores de hospedagem. Tais serviços, eventualmente, estão sujeitos a falhas. A CICLIC não será responsável por quaisquer perdas e danos decorrentes de falha dos serviços destes terceiros, mas, na medida do possível, manterá o Usuário informado sobre prazos e providências que estão sendo tomados para sanear referida falha.
+
+                        A CICLIC não se responsabiliza pelo conteúdo, funcionamento e/ou dados de links externos que possam redirecionar o Usuário à ambiente externo à sua rede e às plataformas.
+
+                        Não poderão ser incluídos, pelos Usuários, nas plataformas, links externos ou páginas que sirvam para fins comerciais ou publicitários ou quaisquer informações ilícitas, violentas, polêmicas, pornográficas, xenofóbicas, discriminatórias ou ofensivas.
+                        </p>
+
+                        <h2>8 .Propriedade Intelectual</h2>
+
+                        <p>Sujeito aos termos do presente instrumento, a CICLIC concede ao Usuário uma autorização limitada, temporária, não exclusiva e não transferível para usar as plataformas somente naquilo que seja estritamente necessário para o exercício das atividades autorizadas e reguladas nestes Termos e Condições Gerais, nas Políticas e na legislação aplicável.
+
+                        Todos os direitos relativos às plataformas e suas funcionalidades são de titularidade da CICLIC, inclusive no que diz respeito aos seus textos, imagens, layouts e códigos. Tal conteúdo é protegido pela Lei da Propriedade Industrial (Lei nº 9.279/96), Lei de Direitos Autorais (Lei nº 9.610/98) e Lei do Software (Lei nº 9.609/98).
+
+                        É proibido usar, copiar, reproduzir, modificar, traduzir, publicar, transmitir, distribuir, executar, fazer o upload, exibir, licenciar, vender ou explorar o conteúdo, para qualquer finalidade. Nenhuma cópia, distribuição, engenharia reversa, exibição da Plataforma e/ou Conteúdo deve ser entendida como restrição ou renúncia dos direitos de propriedade intelectual da CICLIC, salvo se expressamente autorizados.
+
+                        Estes Termos e Condições Gerais não cede ou transfere ao usuário qualquer direito, de modo que o acesso não gera qualquer direito de propriedade intelectual ao usuário, exceto pela licença limitada ora concedida.
+
+                        O uso das plataformas pelo Usuário é pessoal, individual e intransferível, sendo vedado qualquer uso não autorizado, comercial ou não-comercial. Tais usos consistirão em violação dos direitos de propriedade intelectual da CICLIC, puníveis nos termos da legislação aplicável.
+                        </p>
+
+                        <h2>9. Interrupção e Cancelamento de Acesso e Utilização</h2>
+
+                        <p>Sem prejuízo das demais medidas legais cabíveis, a CICLIC poderá, a qualquer momento, advertir, interromper ou cancelar, pelo prazo determinado ou indeterminado, de maneira definitiva ou provisória, sem prévio aviso, a critério e por discricionariedade da CICLIC, a conta do Usuário:
+
+                        a) que violar qualquer dispositivo do presente instrumento;
+
+                        b) que descumprir os seus deveres de Usuário;
+
+                        c) que tiver qualquer comportamento fraudulento, culposo ou doloso, ou que ofenda e/ou afete negativamente a terceiros.
+
+                        d) em caso de descontinuidade de qualquer produto ou serviço pela CICLIC.</p>
+
+                        <h2>10. Alterações</h2>
+
+                        <p>Os Termos e Condições Gerais aqui definidos poderão sofrer alterações, unilateralmente e a qualquer tempo, por parte da CICLIC, para adequação e/ou modificação do seu teor ou dos serviços a elas referentes, bem como para atender novas exigências legais. As alterações serão veiculadas nas plataformas e o Usuário poderá optar por aceitar o novo conteúdo ou por interromper seu uso e cancelar sua conta.
+
+                        Os produtos e serviços de titularidade das Seguradoras e Instituições parceiras oferecidas podem, a qualquer tempo, unilateralmente e sem qualquer aviso prévio, serem deixados de fornecer ou sofrerem alterações em suas características, bem como restrições para o uso ou acesso.
+                        </p>
+
+                        <h2>11. Disposições Gerais</h2>
+
+                        <p>Os conteúdos das plataformas da CICLIC são destinados a pessoas maiores e capazes. Por tal razão, sempre que possível, serão empreendidos esforços para identificar casos que não se enquadrem nesta condição. A aquisição de produtos e/ou contratação de serviços só poderá ser realizada por pessoas maiores e com capacidade civil para tanto.</p>
+
+
+                        <h2>12. Alterações</h2>
+
+                        <p>Estes Termos e Condições Gerais entrarão em vigor na data de sua publicação e vigorarão por prazo indeterminado, podendo ser unilateralmente revisado, alterado ou atualizado pela Ciclic, periodicamente, sempre que constatada sua necessidade, mediante publicação da versão atualizada em suas plataformas.
+
+                        Ao utilizar o serviço ou fornecer informações pessoais após eventuais modificações, o Usuário demonstra sua concordância com as novas normas.
+
+                        Diante de qualquer alteração de controle ou alienação societária envolvendo a CICLIC e/ou suas plataformas, os dados dos Usuários podem ser transferidos para os novos proprietários para continuidade do oferecimento de produtos e serviços, nos termos vigentes à época de cada contratação e demais alterações subsequentes.
+                        </p>
+
+                        <h2>13. Jurisição para Resolução de Conflitos</h2>
+
+                        <p>Para a solução de controvérsias decorrentes do presente instrumento será aplicado integralmente o Direito brasileiro.
+
+                        Os eventuais litígios deverão ser dirimidos perante o Foro da Comarca de São Paulo, Estado de São Paulo.
+                        </p>    
+
+                        <h2>14. Disposições Finais</h2>
+
+                        <p>O disposto acima se aplica, imediatamente, para os destinatários destes Termos e Condições Gerais, a partir de sua publicação.
+
+                        Para mais informações acerca destes Termos e Condições Gerais, entre em contato com o nosso Encarregado (“DPO”), Felipe de Souza Santos, através do e-mail dpo@ciclic.com.br.
+                        </p>
+
+                        <h2>15. Informações Adicionais</h2>
+
+                        <p>A Ciclic poderá contatar o Usuário por meio do seu número de telefone, WhatsApp e/ou e-mail sempre que necessário para tratar de assuntos relacionados às plataformas, seus conteúdos ou aos serviços, para fazer comunicações de caráter comercial como, por exemplo, recomendar produtos ou, ainda, realizar pesquisas em relação a novas funcionalidades e à experiência de utilização das plataformas do Usuário. Caso deseje não ser contatado para receber esse tipo de conteúdo, o Usuário poderá solicitar, a qualquer momento, o descadastramento de seu e-mail e/ou seu número de telefone, clicando no link indicado no e-mail recebido ou envie um e-mail para falecom@ciclic.com.br.</p>
+
+
+                        <p>O descadastramento do e-mail do Usuário e/ou do seu número de telefone da base de dados não afetará o uso do Site pelo Usuário.</p>
+
+
+                        <p>Última data de atualização: 28/11/2024</p>
+                        <button class="close-popup" onclick="closePopup()">Fechar</button>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+        <script src="/static/register_scripts.js"></script>
+    </body>
+</html>

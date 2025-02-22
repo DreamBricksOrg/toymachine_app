@@ -1,0 +1,41 @@
+body{
+    cursor:hand;
+}
+
+img {
+    max-width: 100%;
+}
+
+.content {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrap {
+    display: inline-flex;
+    width: 85%;
+    margin-top: 100px;
+}
+
+.description {
+    width: 50%;
+    margin-left: auto;
+    margin-top: 50px;
+}
+
+.meet {
+    width: 80%;
+    margin-bottom: 10%;
+}
+
+.meet-description {
+    width: 100%;
+}
+
+.oos-icon {
+    width: 40%;
+    margin-right: 30px;
+    margin-left: 40px;
+}

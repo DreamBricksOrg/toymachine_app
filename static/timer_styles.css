@@ -1,0 +1,58 @@
+@font-face {
+    font-family: 'OscineXBold';
+    src: url('/static/font/Oscine_XBd.ttf');
+  }
+
+img {
+    max-width: 100%;
+}
+
+.content {
+    width: 100%;
+}
+
+.wrap {
+    display: flex;
+    width: 85%;
+    margin: 3% auto;
+}
+
+.description {
+    display: flex;
+    flex-flow: column;
+    max-width: 40%;
+    padding-top: 5%;
+}
+
+.description img {
+    flex: 0 1 auto;
+}
+
+.timer-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-flow: column;
+}
+
+.timer-container img {
+    flex: 0 1 auto;
+    width: 30%;
+    margin: 10% auto 5%;
+}
+
+.timer {
+    font-family: OscineXBold;
+    font-size: 150px;
+    color: #1d1d1d;
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.unicorn {
+    display: flex;
+    max-width: 50%;
+    margin-left: auto;
+    align-items: center;
+    justify-items: center;
+}
