@@ -48,6 +48,7 @@ input[type="text"], input[type="email"], input[type="number"] {
     padding: 0;
     border: none;
     float: right;
+    background-color: transparent;
 }
 
 input[type=checkbox] {
@@ -159,20 +160,23 @@ button {
 .servicos {
     display: flex;
     flex-flow: column;
-    width: 80%;
-    padding: 2%;
+    width: 90%;
 }
 
 .servicos img {
     flex: 0 1 auto;
-    width: 85%;
+    width: 80%;
+    margin-top: 2%;
 }
 
 .servicos-container {
-    flex: 1 1 auto;
+    flex: 1 1 1;
     display: flex;
     width: 100%;
     margin-top: 3%;
+    background-color: transparent;
+    padding: 3% 3% 0 3%;
+    border-radius: 15px;
 }
 
 .servicos-col-left {
@@ -190,6 +194,7 @@ button {
 }
 
 .termos {
+    margin-top: auto;
     width: 70%;
     font-style: italic;
     padding: 5px 10px;

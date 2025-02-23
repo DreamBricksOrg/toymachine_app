@@ -4,10 +4,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover, interactive-widget=overlays-content"/>
         <title>Cadastro</title>
-        <!-- <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}"> -->
         <link rel="stylesheet" href="static/global.css">
         <link rel="stylesheet" href="/static/register_styles.css">
-        <script src="/static/idle_redirect.js"></script>
+        <!-- <script src="/static/idle_redirect.js"></script> -->
     </head>
     <body>
 
@@ -20,63 +19,63 @@
         <div class="users">
             <form method="post" action="" id="form">
                 <div class="basic-data">
-                    <p onclick="hideButton()">
+                    <p id="user-container">
                         <label for="users">Nome:</label>
-                        <input type="text" name="user" autocomplete="off" required>
+                        <input type="text" id="name" name="user" autocomplete="off" value="{{form_data.user}}">
                     </p>
-                    <p>
-                        <label for="users">E-mail:</label>
-                        <input type="email" id="email" name="email" autocomplete="off" required>
+                    <p id="email-container">
+                        <label for="email">E-mail:</label>
+                        <input type="email" id="email" name="email" autocomplete="off" value="{{form_data.email}}">
                     </p>
                     <div class="email-buttons">
                         <button type="button" onclick="addEmailDomain('@gmail.com')">@gmail.com</button>
                         <button type="button" onclick="addEmailDomain('@outlook.com')">@outlook.com</button>
                         <button type="button" onclick="addEmailDomain('@hotmail.com')">@hotmail.com</button>
                     </div>
-                    <p>
+                    <p id="cellphone-container">
                         <label for="cellphone">WhatsApp:</label>
-                        <input type="text" inputmode="tel" id="cellphone" name="cellphone" autocomplete="off" required>
+                        <input type="text" inputmode="tel" id="cellphone" name="cellphone" autocomplete="off" value="{{form_data.cellphone}}">
                     </p>
-                    <p>
+                    <p id="cpf-container">
                         <label for="cpf">CPF:</label>
-                        <input type="text" inputmode="numeric" id="cpf" name="cpf" autocomplete="off" required pattern="(\d{3}\.?\d{3}\.?\d{3}-?\d{2})|(\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})">
+                        <input type="text" inputmode="numeric" id="cpf" name="cpf" autocomplete="off" value="{{form_data.cpf}}" pattern="(\d{3}\.?\d{3}\.?\d{3}-?\d{2})|(\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})">
                     </p>
                 </div>
 
                 <div class="servicos">
                     <img src="/static/images/4/qual_proteçao_texto.png" alt="">
                     
-                    <div class="servicos-container">
+                    <div class="servicos-container" id="servicos-container">
                         <div class="servicos-col-left">
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="viagem">
+                                <input type="checkbox" name="protections" value="viagem" id="protecoes" {% if 'viagem' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Seguro Viagem
                             </label><br>
                     
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="saude">
+                                <input type="checkbox" name="protections" value="saude" id="protecoes" {% if 'saude' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Saúde Protegida
                             </label><br>
                     
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="bike">
+                                <input type="checkbox" name="protections" value="bike" id="protecoes" {% if 'bike' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Seguro Bike
                             </label><br>
                         </div>
                         
                         <div class="servicos-col-right">
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="celular">
+                                <input type="checkbox" name="protections" value="celular" id="protecoes" {% if 'celular' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Seguro Celular e Portáteis
                             </label><br>
                     
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="residencial">
+                                <input type="checkbox" name="protections" value="residencial" id="protecoes" {% if 'residencial' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Seguro Residencial
                             </label><br>
                     
                             <label class="checkbox-label">
-                                <input type="checkbox" name="protections" value="emprestimo">
+                                <input type="checkbox" name="protections" value="emprestimo" id="protecoes" {% if 'emprestimo' in form_data.protections %}checked{% endif %}>
                                 <span class="custom-checkbox"></span>Empréstimo Pessoal
                             </label><br><br>
                         </div>
@@ -406,5 +405,13 @@
             </div>
         </div>
         <script src="/static/register_scripts.js"></script>
+        <script>
+            var form_error = "{{form_error}}";
+
+            if (form_error) {
+                console.log("Erro enviado: " + form_error);
+                errorHighlight(form_error)
+            }
+         </script>
     </body>
 </html>

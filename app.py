@@ -114,6 +114,8 @@ def products():
 @app.route('/cadastro', methods=['GET', 'POST'])
 def register():
     message = None
+    error = None
+    form_data = {}
 
     if request.method == 'POST':
 
@@ -138,6 +140,14 @@ def register():
         cpf = request.form['cpf']
         protections = request.form.getlist('protections')
 
+        form_data = {
+            'user': name,
+            'email': email,
+            'cellphone': cellphone,
+            'cpf': cpf,
+            'protections': protections
+        }
+
         print("CPF informado: ", cpf)
 
         if name == 'CiclicAdmin' and email == 'admin@admin':
@@ -145,21 +155,26 @@ def register():
 
         if not request.form.getlist('protections'):
             message = "Por favor, selecione qual a proteção mais adequada para você!"
+            error = "Protecoes"
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == False and phone_validator(cellphone) == True:
             data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections})
             with open(database_path, "w", encoding="utf-8") as arquivo:
                 json.dump(data, arquivo, ensure_ascii=False, indent=4)
             message=None
+            form_data = None
             start_game()
             return redirect('/maquinaliberada')
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == True:
             message = "O CPF informado já está cadastrado."
+            error = "CPF"
         elif phone_validator(cellphone) == False:
             message = "Por favor, insira um número de celular válido."
+            error = "Celular"
         else:
             message = "Por favor, insira um número de CPF válido."
+            error = "CPF"
 
-    return render_template('register.html', message=message)
+    return render_template('register.html', message=message, form_data=form_data, form_error=error)
 
 @app.route('/maquinaliberada')
 def gamestarted():

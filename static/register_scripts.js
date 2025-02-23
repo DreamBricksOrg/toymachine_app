@@ -14,7 +14,6 @@ function monitorarTeclado() {
 
 monitorarTeclado();
 
-
 function openPopup() {
     document.getElementById("tos").style.display = "flex";
 }
@@ -29,6 +28,29 @@ window.onclick = function (event) {
         closePopup();
     }
 };
+
+function errorHighlight(form_error) {
+    console.log("Erro recebido: " + form_error);
+    let cpfelement = document.getElementById("cpf-container");
+    let cellphoneelement = document.getElementById("cellphone-container");
+    let email = document.getElementById("email-container");
+    let nameElement = document.getElementById("user-container");
+
+    if (form_error === "CPF") {
+        cpfelement.style.border = "1px solid #F44336";
+        cpfelement.style.backgroundColor = "#FFCDD2";
+    } else if (form_error === "Celular") {
+        cellphoneelement.style.border = "1px solid #F44336";
+        cellphoneelement.style.backgroundColor = "#FFCDD2";
+    } else if (form_error === "Email") {
+        email.style.border = "1px solid #F44336";
+        email.style.backgroundColor = "#FFCDD2";
+    } else if (form_error === "Nome") {
+        nameElement.style.border = "1px solid #F44336";
+        nameElement.style.backgroundColor = "#FFCDD2";
+    }
+    
+}
 
 document.getElementById('cpf').addEventListener('input', function(e) {
     var value = e.target.value;
@@ -51,17 +73,48 @@ document.getElementById('cpf').addEventListener('input', function(e) {
 
 document.getElementById("form").addEventListener("submit", function(event) {
     let toscheckbox = document.getElementById("toscheckbox");
+    let protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
     let checkbox = document.getElementById("termos");
-    
-    if (!toscheckbox.checked) {
+    let protectContainer = document.getElementById("servicos-container");
+    let protectChecked = false;
+
+    protectcheckboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            protectChecked = true;
+        }
+    });
+
+    if (!protectChecked && !toscheckbox.checked) {
         event.preventDefault(); // Impede o envio do formulário
-        checkbox.style.color = "#ff5154";
-        checkbox.style.border= "1px solid #ff5154";
-        checkbox.style.backgroundColor = "#EBD8D0";
+        checkbox.style.color = "#F44336";
+        checkbox.style.border = "1px solid #F44336";
+        checkbox.style.backgroundColor = "#FFCDD2";
+        protectContainer.style.color = "#F44336";
+        protectContainer.style.border = "1px solid #F44336";
+        protectContainer.style.backgroundColor = "#FFCDD2";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#F44336";
+        });
+    } else if (!protectChecked) {
+        event.preventDefault(); // Impede o envio do formulário
+        protectContainer.style.color = "#F44336";
+        protectContainer.style.border = "1px solid #F44336";
+        protectContainer.style.backgroundColor = "#FFCDD2";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#F44336";
+        });
+    } else if (!toscheckbox.checked) {
+        event.preventDefault(); // Impede o envio do formulário
+        checkbox.style.color = "#F44336";
+        checkbox.style.border = "1px solid #F44336";
+        checkbox.style.backgroundColor = "#FFCDD2";
     } else {
         checkbox.style.color = "#1D1D1D";
         checkbox.style.border = "none";
         checkbox.style.backgroundColor = "none";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#1D1D1D";
+        });
     }
 });
 
