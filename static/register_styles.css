@@ -16,7 +16,7 @@ form {
     display: flex;
     margin: 2% auto;
     width: 90%;
-    height: 100%;
+    height: 250px;
     border-radius: 5px;
 }
 
@@ -95,9 +95,9 @@ button {
 
 .email-buttons {
     display: none;
-    margin: 5px 60px 10px;
+    margin: 5px 100px 10px;
     position: absolute;
-    top: 280px;
+    top: 200px;
     background-color: transparent;
 }
 
