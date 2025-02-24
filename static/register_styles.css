@@ -275,3 +275,14 @@ button {
     display: block;
     margin: 5% auto;
 }
+
+.cancel {
+    position: absolute;
+    top: 585px;
+    left: 80px;
+}
+
+.cancel a {
+    color: #1d1d1d;
+    font-size: 130%;
+}
