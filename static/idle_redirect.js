@@ -4,11 +4,11 @@ function resetTimer() {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
         window.location.href = '/';
-    }, 15000); // 45 segundos (45000 ms)
+    }, 15000); // 15 segundos (15000 ms)
 }
 
 // Eventos para detectar atividade do usuário
-['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+['click', 'mousemove', 'keypress', 'scroll', 'touchstart', 'input'].forEach(event => {
     window.addEventListener(event, resetTimer);
 });
 
