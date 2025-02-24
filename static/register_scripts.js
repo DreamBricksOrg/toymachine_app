@@ -124,14 +124,16 @@ document.getElementById("form").addEventListener("submit", function(event) {
         document.querySelectorAll(".checkbox-label").forEach(function(label) {
             label.style.color = "#1D1D1D";
         });
-
-        // Chama a função openLoadingPopup apenas se não houver erros
-        openLoadingPopup(null);
     }
 });
 
 const emailInput = document.getElementById("email");
 const emailButtons = document.querySelector(".email-buttons");
+
+// Exibir botões ao clicar no input de email
+emailInput.addEventListener("focus", function() {
+    emailButtons.style.display = "flex";
+});
 
 // Exibir botões ao digitar
 emailInput.addEventListener("input", function() {
@@ -153,6 +155,11 @@ emailInput.addEventListener("focusout", function() {
 function addEmailDomain(domain) {
     if (!emailInput.value.includes("@")) {
         emailInput.value += domain;
+    } else if (emailInput.value.includes("@")) {
+        const parts = emailInput.value.split("@");
+        console.log(parts[0]);
+        console.log(parts[1]);
+        emailInput.value = parts[0] + domain;
     }
     emailButtons.style.display = "none";
 }
