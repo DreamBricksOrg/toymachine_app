@@ -22,10 +22,19 @@ function closePopup() {
     document.getElementById("tos").style.display = "none";
 }
 
+function openLoadingPopup() {
+    document.getElementById("loading").style.display = "flex";
+}
+
+function closeLoadingPopup() {
+    document.getElementById("loading").style.display = "none";
+}
+
 window.onclick = function (event) {
     const modal = document.getElementById('tos');
     if (event.target === modal) {
         closePopup();
+        closeLoadingPopup();
     }
 };
 
@@ -115,6 +124,9 @@ document.getElementById("form").addEventListener("submit", function(event) {
         document.querySelectorAll(".checkbox-label").forEach(function(label) {
             label.style.color = "#1D1D1D";
         });
+
+        // Chama a função openLoadingPopup apenas se não houver erros
+        openLoadingPopup(null);
     }
 });
 
