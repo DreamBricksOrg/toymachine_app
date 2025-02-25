@@ -27,10 +27,10 @@ def update_status(mode:int, new_status):
     system = platform.system()
 
     if system == 'Windows':
-        json_file = "timer_status.json"
+        json_file = "config.json"
         print("System identified: ", system)
     elif system == 'Linux':
-        json_file = "/home/db/Documents/toymachine_app/timer_status.json"
+        json_file = "/home/db/Documents/toymachine_app/config.json"
         print("System identified: ", system)
     
     # Verifica se o arquivo JSON já existe
