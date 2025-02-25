@@ -195,7 +195,7 @@ def timer():
 
 @app.route('/file.json')
 def get_json():
-    return send_file('timer_status.json', mimetype='application/json')
+    return send_file('config.json', mimetype='application/json')
 
 @app.route('/obrigado')
 def thanks():
@@ -210,9 +210,22 @@ def oos():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
 
+    system = platform.system()
+
+    if system == 'Windows':
+        database_path = "db.json"
+        csv_path = "dados.csv"
+        config_path = "config.json"
+        print("System identified: ", system)
+    elif system == 'Linux':
+        database_path = "/home/db/Documents/toymachine_app/db.json"
+        csv_path = "/home/db/Documents/toymachine_app/dados.csv"
+        config_path = "/home/db/Documents/toymachine_app/config.json"
+        print("System identified: ", system)
+
     aliases = []
 
-    devices = get_mountpoint()
+    devices = "/media/db/FERRAMENTAS"
     for device in devices:
         alias = device.rsplit('/', 1)
         print("Alias", alias)
@@ -227,18 +240,16 @@ def admin():
     
     print(aliases)
 
+    # Carrega o conteúdo do arquivo JSON
+    with open(config_path, "r") as file:
+        data = json.load(file)
+        print('json file loaded.')
+
+    print("------ Inactivity time: ", data["inactivity_time"])
+
+    current_inactivity = int(data["inactivity_time"]) / 1000
+
     if request.method == 'POST':
-
-        system = platform.system()
-
-        if system == 'Windows':
-            database_path = "db.json"
-            csv_path = "dados.csv"
-            print("System identified: ", system)
-        elif system == 'Linux':
-            database_path = "/home/db/Documents/toymachine_app/db.json"
-            csv_path = "/home/db/Documents/toymachine_app/dados.csv"
-            print("System identified: ", system)
 
         if request.form["submit_button"] == 'start':
 
@@ -249,7 +260,6 @@ def admin():
                         data = [data]
             except (FileNotFoundError, json.JSONDecodeError):
                 data = []
-
             
             data.append({'Nome': "Admin", 'Email': "admin", 'Telefone': "None", 'CPF': "None", 'Protecoes': "None"})
             with open(database_path, "w", encoding="utf-8") as arquivo:
@@ -264,12 +274,35 @@ def admin():
             print("request para montar em: ", devices[0])
             copy_data(devices[0])
 
+        elif request.form["submit_button"] == "stop":
 
-    return render_template('admin.html', devices=alias)
+            stop_timer_thread()
+            return redirect('/foradeservico')
+        
+        elif request.form["submit_button"] == "set":
+
+            inactivity_timer = request.form['inactivity']
+            
+            # Atualiza o valor da chave "status"
+            data["inactivity_time"] = int(inactivity_timer) * 1000
+            
+            # Salva o arquivo JSON com o novo valor
+            with open(config_path, "w") as file:
+                json.dump(data, file, indent=4)
+                file.flush()
+
+            #return redirect('/admin', devices=alias, inactivity_timer=current_inactivity)
+
+
+    return render_template('admin.html', devices=alias, inactivity_timer=current_inactivity)
 
 @app.route('/start')
 def start():
     return redirect('/timer')
+
+@app.route('/dados')
+def data():
+    return render_template('dados.html')
 
 @app.route('/manifest.json')
 def serve_manifest():

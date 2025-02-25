@@ -20,6 +20,13 @@
             <p>Nenhum dispositivo encontrado</p>
         {% endif %}
         <button type="submit" name="submit_button" value="copy">Copiar dados</button>
+
+        <div class="settings">
+            <h2>Configurações</h2>
+            <label for="price">Tempo de inatividade:</label>
+            <input type="number" id="inactivity" name="inactivity" step="1" min="15" value=" {{ inactivity_timer }} ">	
+            <button type="submit" name="submit_button" value="set">Definir</button>
+        </div>
         <button class="start-game" type="submit" name="submit_button" value="start">Liberar jogo</button>
     </form>
 
