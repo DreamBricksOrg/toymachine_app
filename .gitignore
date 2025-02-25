@@ -124,6 +124,6 @@ instance/
 .vscode/
 
 # Ignore database and status files
-db.json
 dados.csv
-timer_status.json
+config.json
+db.json
