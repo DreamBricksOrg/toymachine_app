@@ -286,3 +286,14 @@ button {
     color: #1d1d1d;
     font-size: 130%;
 }
+
+.next-button {
+    position: absolute;
+    top: 250px;
+    left: 570px;
+    background-color: #00F73B;
+    padding: 7px 7px;
+    border-radius: 100px;
+    color: #1d1d1d;
+    font-size: 130%;
+}
