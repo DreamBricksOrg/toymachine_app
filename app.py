@@ -3,9 +3,18 @@ from raspberry_handler import start_game, start_timer_thread, stop_timer_thread,
 from data_handler import json_to_csv, get_mountpoint, copy_data
 import json
 import platform
+from datetime import datetime
+import subprocess
 
 app = Flask(__name__)
 system = platform.system()
+
+def get_current_datetime():
+    now = datetime.now()
+    weekday = now.strftime('%A')
+    date = now.strftime('%d/%m/%Y')
+    time = now.strftime('%H:%M:%S')
+    return weekday, date, time
 
 def phone_validator(cellphone: str) -> bool:
 
@@ -249,6 +258,13 @@ def admin():
 
     current_inactivity = int(data["inactivity_time"]) / 1000
 
+    now = get_current_datetime()
+    date_formmater = now[1].split('/')
+    datetime_command = date_formmater[-1] + "/" + date_formmater[1] + "/" + date_formmater[0] + " " + now[2]
+
+    print("Current datetime: ", now)
+    print("Datetime update command: ", datetime_command)
+
     if request.method == 'POST':
 
         if request.form["submit_button"] == 'start':
@@ -291,10 +307,27 @@ def admin():
                 json.dump(data, file, indent=4)
                 file.flush()
 
-            #return redirect('/admin', devices=alias, inactivity_timer=current_inactivity)
+            return redirect('/admin')
+        
+        elif request.form["submit_button"] == "set-datetime":
+
+            if system == 'Windows':
+                print("System identified: ", system)
+            elif system == 'Linux':
+                print("System identified: ", system)
+                try:
+                    subprocess.check_call("ntpdate") #Non-zero exit code means it was unable to get network time
+                except subprocess.CalledProcessError:
+                    now = request.form['datetime']
+                    date_formmater = now[1].split('/')
+                    datetime_command = date_formmater[-1] + "/" + date_formmater[1] + "/" + date_formmater[0] + " " + now[2]
+                    dt = getRTCTime() # Get time from RTC as a datetime object
+                    subprocess.call(['sudo', 'date', '-s', '{:}'.format(dt.strftime('%Y/%m/%d %H:%M:%S'))], shell=True) #Sets system time (Requires root, obviously)
+
+            return redirect('/admin')
 
 
-    return render_template('admin.html', devices=alias, inactivity_timer=current_inactivity)
+    return render_template('admin.html', devices=alias, inactivity_timer=current_inactivity, current_datetime=now)
 
 @app.route('/start')
 def start():
