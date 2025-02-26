@@ -216,5 +216,7 @@ function addEmailDomain(domain) {
 
 
 function openLoadingPopup() {
-    document.getElementById("loading").style.display = "flex";
+    if (cpfInput.value.length > 0 && cellphoneInput.value.length > 0 && emailInput.value.length > 0) {
+        document.getElementById("loading").style.display = "flex";
+    }
 }
