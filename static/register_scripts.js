@@ -128,26 +128,25 @@ const emailButtons = document.querySelector(".email-buttons");
 const nextFieldButton = document.getElementById('next-button');
 const cellphoneInput = document.getElementById('cellphone');
 const cpfInput = document.getElementById('cpf');
-const nextField = document.getElementById('cellphone');
+let nextField = document.getElementById('cellphone');
 
-// Add at the top with other constants
 let isFocusing = false;
 
 // Exibir botões ao clicar no input de email
 emailInput.addEventListener("focus", function() {
-    isFocusing = true;
     emailButtons.style.display = "flex";
     nextFieldButton.style.display = "flex";
+    nextField = cellphoneInput;
 });
 
 // Ocultar nome e email ao clicar no input de WhatsApp
 cellphoneInput.addEventListener("focus", function() {
-    isFocusing = true;
     nextFieldButton.style.display = "flex";
-    if (emailInput.value.length > 0) {
-        nameContainer.style.display = "none";
-        emailContainer.style.display = "none";
-    }
+    nextFieldButton.style.top = "190px"
+    nameContainer.style.display = "none";
+    emailContainer.style.display = "none";
+    nextField = cpfInput;
+    isFocusing = true;
 });
 
 // Exibir botões ao clicar no input de WhatsApp
@@ -155,27 +154,20 @@ cpfInput.addEventListener("focus", function() {
     nextFieldButton.style.display = "none";
     nameContainer.style.display = "none";
     emailContainer.style.display = "none";
-    cellphoneContainer.style.display = "none";
+    // cellphoneContainer.style.display = "none";
 });
 
 // Exibir botões ao digitar
 emailInput.addEventListener("input", function() {
-    if (emailInput.value.trim() !== "") {
         emailButtons.style.display = "flex";
         nextFieldButton.style.display = "flex";
-    } else {
-        emailButtons.style.display = "none";
-    }
 });
 
 // Ocultar botões ao clicar fora
 emailInput.addEventListener("focusout", function() {
     setTimeout(() => {
-        if (!isFocusing) {
-            emailButtons.style.display = "none";
-            nextFieldButton.style.display = "none";
-        }
-        isFocusing = false;
+        emailButtons.style.display = "none";
+        nextFieldButton.style.display = "none";
     }, 100);
 });
 
@@ -186,29 +178,24 @@ cellphoneInput.addEventListener("focusout", function() {
             emailContainer.style.display = "flex";
             nextFieldButton.style.display = "none";
         }
-        isFocusing = false;
     }, 100);
 });
 
 cpfInput.addEventListener("focusout", function() {
     setTimeout(() => {
-        if (!isFocusing) {
-            nameContainer.style.display = "flex";
-            emailContainer.style.display = "flex";
-            cellphoneContainer.style.display = "flex";
-            nextFieldButton.style.display = "none";
-        }
-        isFocusing = false;
+        nameContainer.style.display = "flex";
+        emailContainer.style.display = "flex";
+        cellphoneContainer.style.display = "flex";
+        nextFieldButton.style.display = "none";
     }, 100);
 });
 
 // Função para focar no próximo campo
 nextFieldButton.addEventListener('click', function() {
-    isFocusing = true;
-    if (emailInput === document.activeElement) {
-        cellphoneInput.focus();
-    } else if (cellphoneInput === document.activeElement && cellphoneInput.value.length >= 14) {
+    if (cellphoneInput.value.length > 0) {
         cpfInput.focus();
+    } else if (emailInput.value.length > 0) {
+        cellphoneInput.focus();
     }
     emailButtons.style.display = "none";
     nextFieldButton.style.display = "none";
@@ -226,6 +213,7 @@ function addEmailDomain(domain) {
     }
     emailButtons.style.display = "none";
 }
+
 
 function openLoadingPopup() {
     document.getElementById("loading").style.display = "flex";
