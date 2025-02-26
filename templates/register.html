@@ -32,8 +32,8 @@
                         <button type="button" onclick="addEmailDomain('@outlook.com')">@outlook.com</button>
                         <button type="button" onclick="addEmailDomain('@yahoo.com')">@yahoo.com</button>
                     </div>
-                    <div class="next-button">
-                        <button type="button" ><img src="/static/images/4/arrow_downward.svg" alt="" srcset=""></button>
+                    <div class="next-button" id="next-button">
+                        <button type="button"><img src="/static/images/4/arrow_downward.svg" alt="" srcset=""></button>
                     </div>
                     <p id="cellphone-container">
                         <label for="cellphone">WhatsApp:</label>
@@ -96,7 +96,7 @@
                     {% if message %}
                     <p class="warning">{{message}}</p>
                     {% endif %}
-                    <button type="submit"><img src="/static/images/4/quero_meu_brinde.png" alt=""></button>
+                    <button type="submit" onclick="openLoadingPopup()"><img src="/static/images/4/quero_meu_brinde.png" alt=""></button>
                     <button class="tos-button" type="button" onclick="openPopup()"> <u>Ler os termos</u> </button>
                 </div>
                 

@@ -22,14 +22,6 @@ function closePopup() {
     document.getElementById("tos").style.display = "none";
 }
 
-function openLoadingPopup() {
-    document.getElementById("loading").style.display = "flex";
-}
-
-function closeLoadingPopup() {
-    document.getElementById("loading").style.display = "none";
-}
-
 window.onclick = function (event) {
     const modal = document.getElementById('tos');
     if (event.target === modal) {
@@ -127,18 +119,50 @@ document.getElementById("form").addEventListener("submit", function(event) {
     }
 });
 
+const nameContainer = document.getElementById("user-container");
+const emailContainer = document.getElementById("email-container");
+const cellphoneContainer = document.getElementById("cellphone-container");
+const cpfContainer = document.getElementById("cpf-container");
 const emailInput = document.getElementById("email");
 const emailButtons = document.querySelector(".email-buttons");
+const nextFieldButton = document.getElementById('next-button');
+const cellphoneInput = document.getElementById('cellphone');
+const cpfInput = document.getElementById('cpf');
+const nextField = document.getElementById('cellphone');
+
+// Add at the top with other constants
+let isFocusing = false;
 
 // Exibir botões ao clicar no input de email
 emailInput.addEventListener("focus", function() {
+    isFocusing = true;
     emailButtons.style.display = "flex";
+    nextFieldButton.style.display = "flex";
+});
+
+// Ocultar nome e email ao clicar no input de WhatsApp
+cellphoneInput.addEventListener("focus", function() {
+    isFocusing = true;
+    nextFieldButton.style.display = "flex";
+    if (emailInput.value.length > 0) {
+        nameContainer.style.display = "none";
+        emailContainer.style.display = "none";
+    }
+});
+
+// Exibir botões ao clicar no input de WhatsApp
+cpfInput.addEventListener("focus", function() {
+    nextFieldButton.style.display = "none";
+    nameContainer.style.display = "none";
+    emailContainer.style.display = "none";
+    cellphoneContainer.style.display = "none";
 });
 
 // Exibir botões ao digitar
 emailInput.addEventListener("input", function() {
     if (emailInput.value.trim() !== "") {
         emailButtons.style.display = "flex";
+        nextFieldButton.style.display = "flex";
     } else {
         emailButtons.style.display = "none";
     }
@@ -147,8 +171,47 @@ emailInput.addEventListener("input", function() {
 // Ocultar botões ao clicar fora
 emailInput.addEventListener("focusout", function() {
     setTimeout(() => {
-        emailButtons.style.display = "none";
-    }, 200);
+        if (!isFocusing) {
+            emailButtons.style.display = "none";
+            nextFieldButton.style.display = "none";
+        }
+        isFocusing = false;
+    }, 100);
+});
+
+cellphoneInput.addEventListener("focusout", function() {
+    setTimeout(() => {
+        if (!isFocusing) {
+            nameContainer.style.display = "flex";
+            emailContainer.style.display = "flex";
+            nextFieldButton.style.display = "none";
+        }
+        isFocusing = false;
+    }, 100);
+});
+
+cpfInput.addEventListener("focusout", function() {
+    setTimeout(() => {
+        if (!isFocusing) {
+            nameContainer.style.display = "flex";
+            emailContainer.style.display = "flex";
+            cellphoneContainer.style.display = "flex";
+            nextFieldButton.style.display = "none";
+        }
+        isFocusing = false;
+    }, 100);
+});
+
+// Função para focar no próximo campo
+nextFieldButton.addEventListener('click', function() {
+    isFocusing = true;
+    if (emailInput === document.activeElement) {
+        cellphoneInput.focus();
+    } else if (cellphoneInput === document.activeElement && cellphoneInput.value.length >= 14) {
+        cpfInput.focus();
+    }
+    emailButtons.style.display = "none";
+    nextFieldButton.style.display = "none";
 });
 
 // Adicionar domínio ao e-mail
@@ -162,4 +225,8 @@ function addEmailDomain(domain) {
         emailInput.value = parts[0] + domain;
     }
     emailButtons.style.display = "none";
+}
+
+function openLoadingPopup() {
+    document.getElementById("loading").style.display = "flex";
 }

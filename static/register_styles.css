@@ -27,7 +27,7 @@ form p {
     border: none;
     border-radius: 15px;
     padding: 1.5% 2% 1.5%;
-    height: 50%;
+    height: 50px;
     color: #1d1d1d;
 }
 
@@ -289,6 +289,7 @@ button {
 
 .next-button {
     position: absolute;
+    display: none;
     top: 250px;
     left: 570px;
     background-color: #00F73B;
