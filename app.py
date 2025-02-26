@@ -5,6 +5,7 @@ import json
 import platform
 from datetime import datetime
 import subprocess
+import os
 
 app = Flask(__name__)
 system = platform.system()
@@ -148,6 +149,7 @@ def register():
         cellphone = request.form['cellphone']
         cpf = request.form['cpf']
         protections = request.form.getlist('protections')
+        play_datetime = get_current_datetime()
 
         form_data = {
             'user': name,
@@ -166,7 +168,7 @@ def register():
             message = "Por favor, selecione qual a proteção mais adequada para você!"
             error = "Protecoes"
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == False and phone_validator(cellphone) == True:
-            data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections})
+            data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections, 'Hora': play_datetime[2], 'Data': play_datetime[1]})
             with open(database_path, "w", encoding="utf-8") as arquivo:
                 json.dump(data, arquivo, ensure_ascii=False, indent=4)
             message=None
@@ -234,11 +236,11 @@ def admin():
 
     aliases = []
 
-    devices = "/media/db/FERRAMENTAS"
+    devices = get_mountpoint()
     for device in devices:
         alias = device.rsplit('/', 1)
-        print("Alias", alias)
-        print(alias[-1])
+        #print("Alias", alias)
+        #print(alias[-1])
         if alias[-1]:
             aliases.append(alias[-1])
 
@@ -262,10 +264,12 @@ def admin():
     date_formmater = now[1].split('/')
     datetime_command = date_formmater[-1] + "/" + date_formmater[1] + "/" + date_formmater[0] + " " + now[2]
 
-    print("Current datetime: ", now)
-    print("Datetime update command: ", datetime_command)
+    #print("Current datetime: ", now)
+    #print("Datetime update command: ", datetime_command)
 
     if request.method == 'POST':
+
+        print("Botão pressionado: ", request.form["submit_button"])
 
         if request.form["submit_button"] == 'start':
 
@@ -309,20 +313,26 @@ def admin():
 
             return redirect('/admin')
         
-        elif request.form["submit_button"] == "set-datetime":
+        elif request.form["submit_button"] == "setdatetime":
+
+            print("Definir hora")
+            print("Request de atualizar data: ", request.form['dateupdater'])
 
             if system == 'Windows':
                 print("System identified: ", system)
             elif system == 'Linux':
                 print("System identified: ", system)
-                try:
-                    subprocess.check_call("ntpdate") #Non-zero exit code means it was unable to get network time
-                except subprocess.CalledProcessError:
-                    now = request.form['datetime']
-                    date_formmater = now[1].split('/')
-                    datetime_command = date_formmater[-1] + "/" + date_formmater[1] + "/" + date_formmater[0] + " " + now[2]
-                    dt = getRTCTime() # Get time from RTC as a datetime object
-                    subprocess.call(['sudo', 'date', '-s', '{:}'.format(dt.strftime('%Y/%m/%d %H:%M:%S'))], shell=True) #Sets system time (Requires root, obviously)
+                now = request.form['timeupdater']
+                print("Hora atual: ", now)
+                date_updater = request.form['dateupdater']
+                print("Data formatada: ", date_updater)
+                datetime_command = "date +%Y%m%d -s" + date_updater
+                print("Comando de atualização de data e hora: ", datetime_command)
+                os.system(datetime_command)
+                datetime_command = "date +%T -s " + now + ":00"
+                os.system(datetime_command)
+                #subprocess.call(['timedatectl', 'set-ntp', 'false'], shell=True) # Disable network time
+                #subprocess.call(['date', '+%Y%m%d', '-s', '2025-02-19'], shell=True) #Sets system time
 
             return redirect('/admin')
 
