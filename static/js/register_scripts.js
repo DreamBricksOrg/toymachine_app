@@ -215,9 +215,38 @@ function addEmailDomain(domain) {
     emailButtons.style.display = "none";
 }
 
-
 function openLoadingPopup() {
     if (cpfInput.value.length > 0 && cellphoneInput.value.length > 0 && emailInput.value.length > 0 && protectChecked == true && document.getElementById("toscheckbox").checked) {
         document.getElementById("loading").style.display = "flex";
     }
+}
+
+async function submitFormJs() {
+    const nome = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const telefone = document.getElementById("cellphone").value;
+    const cpf = document.getElementById("cpf").value;
+    
+    // Get selected protections
+    const protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
+    const selectedProtections = Array.from(protectcheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value)
+        .join(',');
+
+    const dataToEncrypt = `${nome},${email},${telefone},${cpf},${selectedProtections}`;
+
+    const rsa_public_key = getRsaPublicKey();
+    const dataEncrypted = await dbEncryptString(dataToEncrypt, rsa_public_key);
+
+    console.log(dataToEncrypt);
+    console.log(dataEncrypted);
+
+    post('/cryptography', dataEncrypted);
+}
+
+function handleSubmit(event) {
+    event.preventDefault(); // Previne o envio padrão do formulário
+    openLoadingPopup(); // Chama a função de loading
+    submitFormJs(); // Chama a função de submit
 }

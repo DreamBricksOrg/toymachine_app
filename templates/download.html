@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+    <script src="/static/js/download_scripts.js"></script>
+    <script src="/static/js/rsa_public_key.js"></script>
+    <script src="/static/js/db_encryption.js"></script>
+    <script src="/static/js/aes_encryption.js"></script>
+    <script src="/static/js/rsa_encryption.js"></script>
+    <script src="/static/js/util.js"></script>
+</head>
+<body>
+    <h1>Ciclic</h1>
+    <h2>Fazer download dos dados</h2>
+    <p>Para fazer download dos dados, faça upload da chave de descriptografia.</p>
+    <input type="file" name="decript_key" id="decript_key">
+    <input type="hidden" id="encryptedText" value="{{data}}">
+    <button type="button" onclick="decryptText()">Baixar dados</button>
+</body>
+</html>

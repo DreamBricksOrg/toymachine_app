@@ -236,7 +236,7 @@ def admin():
 
     aliases = []
 
-    devices = get_mountpoint()
+    devices = "/home/db/Documents/toymachine_app/db.json"
     for device in devices:
         alias = device.rsplit('/', 1)
         #print("Alias", alias)
@@ -294,10 +294,10 @@ def admin():
             print("request para montar em: ", devices[0])
             copy_data(devices[0])
 
-        elif request.form["submit_button"] == "stop":
+        elif request.form["submit_button"] == "delete":
 
-            stop_timer_thread()
-            return redirect('/foradeservico')
+            os.remove(database_path)
+            print("Arquivo deletado: ", database_path)
         
         elif request.form["submit_button"] == "set":
 
@@ -346,6 +346,20 @@ def start():
 @app.route('/dados')
 def data():
     return render_template('dados.html')
+
+@app.route('/cryptography', methods=['GET', 'POST'])
+def cryptography():
+    if request.method == 'POST':
+        print("___________ Encrypted data: ___________ ")
+        data = request.form
+        # Convert form data to string
+        # for key, value in data.items():
+            # print(f"{key}: {value}")
+        data_string = ""
+        data_string = data_string.join([f"{value[1]}" for value in data.items()])
+        print(data_string)
+        return render_template('download.html', data=data_string)
+    return render_template('download.html')
 
 @app.route('/manifest.json')
 def serve_manifest():
