@@ -72,12 +72,13 @@ document.getElementById('cpf').addEventListener('input', function(e) {
     e.target.value = cellPattern;
 });
 
+let protectChecked = false;
+
 document.getElementById("form").addEventListener("submit", function(event) {
     let toscheckbox = document.getElementById("toscheckbox");
     let protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
     let checkbox = document.getElementById("termos");
     let protectContainer = document.getElementById("servicos-container");
-    let protectChecked = false;
 
     protectcheckboxes.forEach(function(checkbox) {
         if (checkbox.checked) {
@@ -216,7 +217,7 @@ function addEmailDomain(domain) {
 
 
 function openLoadingPopup() {
-    if (cpfInput.value.length > 0 && cellphoneInput.value.length > 0 && emailInput.value.length > 0) {
+    if (cpfInput.value.length > 0 && cellphoneInput.value.length > 0 && emailInput.value.length > 0 && protectChecked == true && document.getElementById("toscheckbox").checked) {
         document.getElementById("loading").style.display = "flex";
     }
 }
