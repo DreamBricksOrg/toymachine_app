@@ -363,6 +363,9 @@ def data():
 
 @app.route('/cryptography', methods=['GET', 'POST'])
 def cryptography():
+    if request.method == 'POST':
+        print("Request received on cryptohgraphy!")
+        print("Request form: ", request.files)
     return render_template('download.html')
 
 @app.route('/encrypter', methods=['GET', 'POST'])
@@ -385,6 +388,8 @@ def encripter():
             file.save(save_path)
             print("File saved to:", save_path)
             return render_template('encripter.html', message="Arquivo encriptado com sucesso!")
+    else:
+        return send_file('dados_encrypted.csv', mimetype='text/csv')
     
     return render_template('encripter.html')
 
