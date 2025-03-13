@@ -11,6 +11,25 @@ async function encryptCsv(databasePath) {
         for (const line of lines) {
             if (line.trim() !== '') {
                 const dataEncrypted = await dbEncryptString(line, rsa_public_key);
+                
+                // Create JSON payload
+                const currentDate = new Date().toISOString();
+                const logData = {
+                    status: "JOGOU",
+                    project: "67d358c732f32712b51c5aeb",
+                    additional: dataEncrypted,
+                    timePlayed: currentDate
+                };
+
+                // Send log data
+                const logserverUploadResponse = await fetch('/encris', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(logData)
+                });
+
                 encryptedLines.push(dataEncrypted);
             }
         }
