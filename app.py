@@ -10,6 +10,15 @@ import os
 app = Flask(__name__)
 system = platform.system()
 
+if system == 'Windows':
+    database_path = "db.json"
+    csv_path = "dados.csv"
+    print("System identified: ", system)
+elif system == 'Linux':
+    database_path = "/home/db/Documents/toymachine_app/db.json"
+    csv_path = "/home/db/Documents/toymachine_app/dados.csv"
+    print("System identified: ", system)
+
 def get_current_datetime():
     now = datetime.now()
     weekday = now.strftime('%A')
@@ -87,10 +96,8 @@ def existent_cpf(cpf: str) -> bool:
     if cpf == "010.010.010-10":
         return False
 
-    query = {'CPF' : cpf}  # Procura CPF no banco de dados
-
     try:
-        with open("/home/db/Documents/toymachine_app/db.json", "r", encoding="utf-8") as f:
+        with open(database_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
                 data = [data]
@@ -111,7 +118,15 @@ def existent_cpf(cpf: str) -> bool:
 
 @app.route('/', methods=['GET'])  # Call to Action
 def index():
-    return render_template('index.html')
+    try:
+        with open(database_path, "r") as file:
+            data = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = None
+
+    if data:
+        json_to_csv(database_path, csv_path)
+    return render_template('index.html', data=csv_path)
 
 @app.route('/conheca', methods=['GET'])
 def about():
@@ -128,13 +143,6 @@ def register():
     form_data = {}
 
     if request.method == 'POST':
-
-        if system == 'Windows':
-            database_path = "db.json"
-            print("System identified: ", system)
-        elif system == 'Linux':
-            database_path = "/home/db/Documents/toymachine_app/db.json"
-            print("System identified: ", system)
 
         try:
             with open(database_path, "r", encoding="utf-8") as f:
@@ -164,9 +172,21 @@ def register():
         if name == 'CiclicAdmin' and email == 'admin@admin':
             return redirect('/admin')
 
-        if not request.form.getlist('protections'):
+        if not name:
+            message = "Por favor, insira seu nome."
+            error = "Nome"
+        elif not email:
+            message = "Por favor, insira seu e-mail."
+            error = "Email"
+        elif not request.form.getlist('protections'):
             message = "Por favor, selecione qual a proteção mais adequada para você!"
             error = "Protecoes"
+        elif cpf_validator(cpf) == True and existent_cpf(cpf) == True:
+            message = "O CPF informado já está cadastrado."
+            error = "CPF"
+        elif phone_validator(cellphone) == False:
+            message = "Por favor, insira um número de celular válido."
+            error = "Celular"
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == False and phone_validator(cellphone) == True:
             data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections, 'Hora': play_datetime[2], 'Data': play_datetime[1]})
             with open(database_path, "w", encoding="utf-8") as arquivo:
@@ -175,12 +195,6 @@ def register():
             form_data = None
             start_game()
             return redirect('/maquinaliberada')
-        elif cpf_validator(cpf) == True and existent_cpf(cpf) == True:
-            message = "O CPF informado já está cadastrado."
-            error = "CPF"
-        elif phone_validator(cellphone) == False:
-            message = "Por favor, insira um número de celular válido."
-            error = "Celular"
         else:
             message = "Por favor, insira um número de CPF válido."
             error = "CPF"
@@ -236,7 +250,7 @@ def admin():
 
     aliases = []
 
-    devices = "/home/db/Documents/toymachine_app/db.json"
+    devices = "home/db/Documents/toymachine_app/db.json"
     for device in devices:
         alias = device.rsplit('/', 1)
         #print("Alias", alias)
@@ -349,17 +363,11 @@ def data():
 
 @app.route('/cryptography', methods=['GET', 'POST'])
 def cryptography():
-    if request.method == 'POST':
-        print("___________ Encrypted data: ___________ ")
-        data = request.form
-        # Convert form data to string
-        # for key, value in data.items():
-            # print(f"{key}: {value}")
-        data_string = ""
-        data_string = data_string.join([f"{value[1]}" for value in data.items()])
-        print(data_string)
-        return render_template('download.html', data=data_string)
     return render_template('download.html')
+
+@app.route('/dados.csv')
+def get_csv():
+    return send_file('dados.csv', mimetype='text/csv')
 
 @app.route('/manifest.json')
 def serve_manifest():
