@@ -2,6 +2,7 @@
 import json
 import csv
 import shutil
+import os
 
 
 # Diretório do JSON e nome do CSV gerado
@@ -24,6 +25,8 @@ def json_to_csv(json_file, csv_file):
             print("O JSON não possui dados válidos.")
     except Exception as e:
         print(f"Erro durante a conversão: {e}")
+        os.remove(csv_file)
+
 
 def get_mountpoint():
     import subprocess
