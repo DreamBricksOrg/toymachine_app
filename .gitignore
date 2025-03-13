@@ -127,3 +127,5 @@ instance/
 dados.csv
 config.json
 db.json
+config.json
+dados_encrypted.csv
