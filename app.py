@@ -368,16 +368,22 @@ def cryptography():
 @app.route('/encrypter', methods=['GET', 'POST'])
 def encripter():
     if request.method == 'POST':
+        print("Request received")
         if 'file' not in request.files:
+            print("No file in request")
             return render_template('encripter.html', message="Nenhum arquivo foi enviado.")
-        
+            
         file = request.files['file']
+        print("File received:", file.filename)
         
         if file.filename == '':
             return render_template('encripter.html', message="Nenhum arquivo foi selecionado.")
         
         if file:
-            file.save(os.path.join(app.root_path, 'dados_encrypted.csv'))
+            # Save encrypted file
+            save_path = os.path.join(app.root_path, 'dados_encrypted.csv')
+            file.save(save_path)
+            print("File saved to:", save_path)
             return render_template('encripter.html', message="Arquivo encriptado com sucesso!")
     
     return render_template('encripter.html')

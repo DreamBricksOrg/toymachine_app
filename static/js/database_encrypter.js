@@ -17,17 +17,26 @@ async function encryptCsv(databasePath) {
 
         console.log('Encrypted CSV:', encryptedLines);
 
-        // Converta as linhas criptografadas de volta para o formato CSV
+        // Create CSV file from encrypted lines
         const encryptedCsv = encryptedLines.join('\n');
+        const blob = new Blob([encryptedCsv], { type: 'text/csv' });
+        const file = new File([blob], 'dados_encrypted.csv', { type: 'text/csv' });
 
-        // Envie o CSV criptografado para o servidor
-        await fetch('/encrypter', {
+        // Create FormData and append file
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send encrypted CSV as file
+        const uploadResponse = await fetch('/encrypter', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/csv'
-            },
-            body: encryptedCsv
+            body: formData
         });
+
+        if (uploadResponse.ok) {
+            console.log('File uploaded successfully');
+        } else {
+            console.error('Upload failed:', uploadResponse.statusText);
+        }
 
         return encryptedLines;
     }
