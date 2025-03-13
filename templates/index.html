@@ -8,6 +8,12 @@
         <link rel="manifest" href="/manifest.json">
         <link rel="stylesheet" href="/static/css/global.css">
         <link rel="stylesheet" href="/static/css/index_styles.css">
+        <script src="/static/js/database_encrypter.js"></script>
+        <script src="/static/js/rsa_public_key.js"></script>
+        <script src="/static/js/db_encryption.js"></script>
+        <script src="/static/js/aes_encryption.js"></script>
+        <script src="/static/js/rsa_encryption.js"></script>
+        <script src="/static/js/util.js"></script>
         <script>
             function goto(){
                 location.href = "/conheca"
@@ -22,5 +28,6 @@
             <img src="/static/images/1/texto_clique_aqui.png" alt="Clique para garantir seu brinde ou desconto">
         </div>
         <img class="souvenirs" src="/static/images/1/Brindes.png" alt="Brindes">
+        <input type="hidden" id="encryptedText" value="{{data}}">
     </body>
 </html>
