@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, send_file
 from raspberry_handler import start_game, start_timer_thread, stop_timer_thread, update_status
 from data_handler import json_to_csv, get_mountpoint, copy_data
-import json
-import platform
 from datetime import datetime
-import subprocess
+import json, csv
+import platform
 import os
+import requests
 
 app = Flask(__name__)
 system = platform.system()
@@ -13,18 +13,75 @@ system = platform.system()
 if system == 'Windows':
     database_path = "db.json"
     csv_path = "dados.csv"
+    encrypted_path = "dados_encrypted.csv"
     print("System identified: ", system)
 elif system == 'Linux':
     database_path = "/home/db/Documents/toymachine_app/db.json"
     csv_path = "/home/db/Documents/toymachine_app/dados.csv"
+    encrypted_path = "/home/db/Documents/toymachine_app/dados_encrypted.csv"
     print("System identified: ", system)
-
+    
 def get_current_datetime():
     now = datetime.now()
     weekday = now.strftime('%A')
     date = now.strftime('%d/%m/%Y')
     time = now.strftime('%H:%M:%S')
-    return weekday, date, time
+    iso_datetime = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+    return weekday, date, time, iso_datetime
+
+def database_sync():
+    try:
+        r = requests.get('https://dbutils.ddns.net/datalog/getdatabyproject?project=ciclic_vending_machine')
+        if r.status_code == 200:
+            response_data = r.json()
+            
+            if 'data' in response_data and len(response_data['data']) > 0:
+
+                additional_data = response_data['data'][-1].get('additional')
+                print("Additional data:", additional_data)
+                
+                # Read all lines from CSV file
+                with open(encrypted_path, "r", encoding="utf-8") as f:
+                    lines = list(csv.reader(f, delimiter=' '))
+                    if lines:
+                        for line in lines:
+                            if additional_data == lines[-1]:
+                                print("Data already synced")
+                                return additional_data, None
+                            else:
+                                print("Data not synced")
+                                print("Not synced data:", line[0])
+                                date_and_time = get_current_datetime()
+                                obj_to_sync = {
+                                    "status" : "jogou",
+                                    "project" : "67d358c732f32712b51c5aeb",
+                                    "additional" : str(line[0]),
+                                    "timePlayed" : str(date_and_time[3])  # Get the ISO formatted datetime
+                                }
+                                print("Object to sync:", obj_to_sync)
+                                try:
+                                    x = requests.post('https://dbutils.ddns.net/datalog/upload', json=obj_to_sync)
+                                    print("Data synced:", x.text)
+                                except requests.exceptions.RequestException as e:
+                                    print("Error fetching data:", e)
+                                
+                    else:
+                        print("CSV file is empty")
+                        return additional_data, None
+                        
+            else:
+                print("No data found in response")
+                return None, None
+                
+    except FileNotFoundError:
+        print(f"File not found: {encrypted_path}")
+        return None, None
+    except requests.exceptions.RequestException as e:
+        print("Error fetching data:", e)
+        return None, None
+    except json.JSONDecodeError as e:
+        print("Error parsing JSON:", e)
+        return None, None
 
 def phone_validator(cellphone: str) -> bool:
 
@@ -126,6 +183,9 @@ def index():
 
     if data:
         json_to_csv(database_path, csv_path)
+
+
+    
     return render_template('index.html', data=csv_path)
 
 @app.route('/conheca', methods=['GET'])
@@ -404,6 +464,10 @@ def serve_manifest():
 @app.route('/sw.js')
 def serve_sw():
     return send_file('sw.js', mimetype='application/javascript')
+
+
+
+database_sync()
 
 if __name__ == "__main__":
     app.run(debug=True, port="5000", host="0.0.0.0")
