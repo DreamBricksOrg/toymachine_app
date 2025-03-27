@@ -32,58 +32,25 @@ def get_current_datetime():
     return weekday, date, time, iso_datetime
 
 def database_sync():
-    try:
-        r = requests.get('https://dbutils.ddns.net/datalog/getdatabyproject?project=ciclic_vending_machine')
-        if r.status_code == 200:
-            response_data = r.json()
-            
-            if 'data' in response_data and len(response_data['data']) > 0:
-
-                additional_data = response_data['data'][-1].get('additional')
-                print("Additional data:", additional_data)
-                
-                # Read all lines from CSV file
-                with open(encrypted_path, "r", encoding="utf-8") as f:
-                    lines = list(csv.reader(f, delimiter=' '))
-                    if lines:
-                        for line in lines:
-                            if additional_data == lines[-1]:
-                                print("Data already synced")
-                                return additional_data, None
-                            else:
-                                print("Data not synced")
-                                print("Not synced data:", line[0])
-                                date_and_time = get_current_datetime()
-                                obj_to_sync = {
-                                    "status" : "jogou",
-                                    "project" : "67d358c732f32712b51c5aeb",
-                                    "additional" : str(line[0]),
-                                    "timePlayed" : str(date_and_time[3])  # Get the ISO formatted datetime
-                                }
-                                print("Object to sync:", obj_to_sync)
-                                try:
-                                    x = requests.post('https://dbutils.ddns.net/datalog/upload', json=obj_to_sync)
-                                    print("Data synced:", x.text)
-                                except requests.exceptions.RequestException as e:
-                                    print("Error fetching data:", e)
-                                
-                    else:
-                        print("CSV file is empty")
-                        return additional_data, None
-                        
-            else:
-                print("No data found in response")
-                return None, None
-                
-    except FileNotFoundError:
-        print(f"File not found: {encrypted_path}")
-        return None, None
-    except requests.exceptions.RequestException as e:
-        print("Error fetching data:", e)
-        return None, None
-    except json.JSONDecodeError as e:
-        print("Error parsing JSON:", e)
-        return None, None
+    with open(encrypted_path, "r", encoding="utf-8") as f:
+        lines = list(csv.reader(f, delimiter=' '))
+        if lines:
+            date_and_time = get_current_datetime()
+            obj_to_sync = {
+                "status" : "jogou",
+                "project" : "67d358c732f32712b51c5aeb",
+                "additional" : str(lines[-1][0]),
+                "timePlayed" : str(date_and_time[3]).strip(' ')  # Get the ISO formatted datetime
+            }
+            print("Object to sync:", obj_to_sync)
+            try:
+                x = requests.post('https://dbutils.ddns.net/datalog/upload', data=obj_to_sync)
+                print("Data synced:", x.text)
+            except requests.exceptions.RequestException as e:
+                print("Error fetching data:", e)
+                    
+        else:
+            print("CSV file is empty")
 
 def phone_validator(cellphone: str) -> bool:
 
@@ -185,8 +152,6 @@ def index():
 
     if data:
         json_to_csv(database_path, csv_path)
-
-
     
     return render_template('index.html', data=csv_path)
 
@@ -288,6 +253,7 @@ def get_json():
 def thanks():
     update_status(0, 0)
     update_status(1, 0)
+    database_sync()
     return render_template('thanks.html'), {"Refresh": "7, url=/"}
 
 @app.route('/foradeservico')
@@ -460,10 +426,6 @@ def serve_manifest():
 @app.route('/sw.js')
 def serve_sw():
     return send_file('sw.js', mimetype='application/javascript')
-
-
-
-database_sync()
 
 if __name__ == "__main__":
     app.run(debug=True, port="5000", host="0.0.0.0")
