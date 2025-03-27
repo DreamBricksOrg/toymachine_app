@@ -216,6 +216,7 @@ async function openLoadingPopup(event) {
         document.querySelectorAll(".checkbox-label").forEach(function(label) {
             label.style.color = "#1D1D1D";
         });
+
         setTimeout(() => {
             document.getElementById("form").submit();
         }, 750); // Change the delay to 1 second
