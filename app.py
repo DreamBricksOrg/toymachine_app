@@ -14,11 +14,13 @@ if system == 'Windows':
     database_path = "db.json"
     csv_path = "dados.csv"
     encrypted_path = "dados_encrypted.csv"
+    config_path = "config.json"
     print("System identified: ", system)
 elif system == 'Linux':
     database_path = "/home/db/Documents/toymachine_app/db.json"
     csv_path = "/home/db/Documents/toymachine_app/dados.csv"
     encrypted_path = "/home/db/Documents/toymachine_app/dados_encrypted.csv"
+    config_path = "/home/db/Documents/toymachine_app/config.json"
     print("System identified: ", system)
     
 def get_current_datetime():
@@ -298,15 +300,9 @@ def admin():
     system = platform.system()
 
     if system == 'Windows':
-        database_path = "db.json"
-        csv_path = "dados.csv"
-        config_path = "config.json"
-        print("System identified: ", system)
+        devices = "home/db/Documents/toymachine_app/db.json"
     elif system == 'Linux':
-        database_path = "/home/db/Documents/toymachine_app/db.json"
-        csv_path = "/home/db/Documents/toymachine_app/dados.csv"
-        config_path = "/home/db/Documents/toymachine_app/config.json"
-        print("System identified: ", system)
+        devices = get_mountpoint()
 
     aliases = []
 
