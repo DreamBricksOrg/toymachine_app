@@ -47,7 +47,7 @@ img {
     display: flex;
     justify-content: center;
     position: absolute;
-    bottom: 3%;
+    bottom: 5%;
 }
 
 .button-wrapper img {

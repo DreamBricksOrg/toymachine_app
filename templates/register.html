@@ -4,14 +4,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover, interactive-widget=overlays-content"/>
         <title>Cadastro</title>
-        <link rel="stylesheet" href="static/css/global.css">
-        <link rel="stylesheet" href="/static/css/register_styles.css">
-        <script src="/static/js/rsa_public_key.js"></script>
-        <script src="/static/js/db_encryption.js"></script>
-        <script src="/static/js/aes_encryption.js"></script>
-        <script src="/static/js/rsa_encryption.js"></script>
-        <script src="/static/js/util.js"></script>
-        <script src="/static/js/idle_redirect.js"></script>
+        <link rel="stylesheet" href="static/global.css">
+        <link rel="stylesheet" href="/static/register_styles.css">
+        <script src="/static/idle_redirect.js"></script>
     </head>
     <body>
 
@@ -101,7 +96,7 @@
                     {% if message %}
                     <p class="warning">{{message}}</p>
                     {% endif %}
-                    <button type="submit" onclick="handleSubmit(event)"><img src="/static/images/4/quero_meu_brinde.png" alt=""></button>
+                    <button onclick="openLoadingPopup(event)"><img src="/static/images/4/quero_meu_brinde.png" alt=""></button>
                     <button class="tos-button" type="button" onclick="openPopup()"> <u>Ler os termos</u> </button>
                 </div>
                 
@@ -422,7 +417,7 @@
             </div>
         </div>
 
-        <script src="/static/js/register_scripts.js"></script>
+        <script src="/static/register_scripts.js"></script>
         <script>
             var form_error = "{{form_error}}";
 

@@ -1,87 +1,21 @@
 from flask import Flask, render_template, request, redirect, send_file
 from raspberry_handler import start_game, start_timer_thread, stop_timer_thread, update_status
 from data_handler import json_to_csv, get_mountpoint, copy_data
-from datetime import datetime
-import json, csv
+import json
 import platform
+from datetime import datetime
+import subprocess
 import os
-import requests
 
 app = Flask(__name__)
 system = platform.system()
 
-if system == 'Windows':
-    database_path = "db.json"
-    csv_path = "dados.csv"
-    encrypted_path = "dados_encrypted.csv"
-    print("System identified: ", system)
-elif system == 'Linux':
-    database_path = "/home/db/Documents/toymachine_app/db.json"
-    csv_path = "/home/db/Documents/toymachine_app/dados.csv"
-    encrypted_path = "/home/db/Documents/toymachine_app/dados_encrypted.csv"
-    print("System identified: ", system)
-    
 def get_current_datetime():
     now = datetime.now()
     weekday = now.strftime('%A')
     date = now.strftime('%d/%m/%Y')
     time = now.strftime('%H:%M:%S')
-    iso_datetime = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-    return weekday, date, time, iso_datetime
-
-def database_sync():
-    try:
-        r = requests.get('https://dbutils.ddns.net/datalog/getdatabyproject?project=ciclic_vending_machine')
-        if r.status_code == 200:
-            response_data = r.json()
-            
-            if 'data' in response_data and len(response_data['data']) > 0:
-
-                additional_data = response_data['data'][-1].get('additional')
-                print("Additional data:", additional_data)
-                
-                # Read all lines from CSV file
-                with open(encrypted_path, "r", encoding="utf-8") as f:
-                    lines = list(csv.reader(f, delimiter=' '))
-                    if lines:
-                        for line in lines:
-                            if additional_data == lines[-1]:
-                                print("Data already synced")
-                                return additional_data, None
-                            else:
-                                print("Data not synced")
-                                print("Not synced data:", line[0])
-                                date_and_time = get_current_datetime()
-                                obj_to_sync = {
-                                    "status" : "jogou",
-                                    "project" : "67d358c732f32712b51c5aeb",
-                                    "additional" : str(line[0]),
-                                    "timePlayed" : str(date_and_time[3])  # Get the ISO formatted datetime
-                                }
-                                print("Object to sync:", obj_to_sync)
-                                try:
-                                    x = requests.post('https://dbutils.ddns.net/datalog/upload', json=obj_to_sync)
-                                    print("Data synced:", x.text)
-                                except requests.exceptions.RequestException as e:
-                                    print("Error fetching data:", e)
-                                
-                    else:
-                        print("CSV file is empty")
-                        return additional_data, None
-                        
-            else:
-                print("No data found in response")
-                return None, None
-                
-    except FileNotFoundError:
-        print(f"File not found: {encrypted_path}")
-        return None, None
-    except requests.exceptions.RequestException as e:
-        print("Error fetching data:", e)
-        return None, None
-    except json.JSONDecodeError as e:
-        print("Error parsing JSON:", e)
-        return None, None
+    return weekday, date, time
 
 def phone_validator(cellphone: str) -> bool:
 
@@ -153,8 +87,10 @@ def existent_cpf(cpf: str) -> bool:
     if cpf == "010.010.010-10":
         return False
 
+    query = {'CPF' : cpf}  # Procura CPF no banco de dados
+
     try:
-        with open(database_path, "r", encoding="utf-8") as f:
+        with open("db.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             if not isinstance(data, list):
                 data = [data]
@@ -175,18 +111,20 @@ def existent_cpf(cpf: str) -> bool:
 
 @app.route('/', methods=['GET'])  # Call to Action
 def index():
-    try:
-        with open(database_path, "r") as file:
-            data = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = None
+    system = platform.system()
 
-    if data:
-        json_to_csv(database_path, csv_path)
-
-
-    
-    return render_template('index.html', data=csv_path)
+    if system == 'Windows':
+        database_path = "db.json"
+        csv_path = "dados.csv"
+        config_path = "config.json"
+        print("System identified: ", system)
+    elif system == 'Linux':
+        database_path = "/home/db/Documents/toymachine_app/db.json"
+        csv_path = "/home/db/Documents/toymachine_app/dados.csv"
+        config_path = "/home/db/Documents/toymachine_app/config.json"
+        print("System identified: ", system)
+    json_to_csv(database_path, csv_path)
+    return render_template('index.html')
 
 @app.route('/conheca', methods=['GET'])
 def about():
@@ -203,6 +141,13 @@ def register():
     form_data = {}
 
     if request.method == 'POST':
+
+        if system == 'Windows':
+            database_path = "db.json"
+            print("System identified: ", system)
+        elif system == 'Linux':
+            database_path = "/home/db/Documents/toymachine_app/db.json"
+            print("System identified: ", system)
 
         try:
             with open(database_path, "r", encoding="utf-8") as f:
@@ -232,21 +177,9 @@ def register():
         if name == 'CiclicAdmin' and email == 'admin@admin':
             return redirect('/admin')
 
-        if not name:
-            message = "Por favor, insira seu nome."
-            error = "Nome"
-        elif not email:
-            message = "Por favor, insira seu e-mail."
-            error = "Email"
-        elif not request.form.getlist('protections'):
+        if not request.form.getlist('protections'):
             message = "Por favor, selecione qual a proteção mais adequada para você!"
             error = "Protecoes"
-        elif cpf_validator(cpf) == True and existent_cpf(cpf) == True:
-            message = "O CPF informado já está cadastrado."
-            error = "CPF"
-        elif phone_validator(cellphone) == False:
-            message = "Por favor, insira um número de celular válido."
-            error = "Celular"
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == False and phone_validator(cellphone) == True:
             data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections, 'Hora': play_datetime[2], 'Data': play_datetime[1]})
             with open(database_path, "w", encoding="utf-8") as arquivo:
@@ -255,6 +188,15 @@ def register():
             form_data = None
             start_game()
             return redirect('/maquinaliberada')
+        elif cpf_validator(cpf) == True and existent_cpf(cpf) == True:
+            message = "O CPF informado já está cadastrado."
+            error = "CPF"
+        elif phone_validator(cellphone) == False:
+            message = "Por favor, insira um número de celular válido."
+            error = "Celular"
+        elif not name:
+            message = "Por favor, insira seu nome."
+            error = "Nome"
         else:
             message = "Por favor, insira um número de CPF válido."
             error = "CPF"
@@ -310,7 +252,7 @@ def admin():
 
     aliases = []
 
-    devices = "home/db/Documents/toymachine_app/db.json"
+    devices = "/home/db/Documents/toymachine_app/dados.csv"
     for device in devices:
         alias = device.rsplit('/', 1)
         #print("Alias", alias)
@@ -368,10 +310,10 @@ def admin():
             print("request para montar em: ", devices[0])
             copy_data(devices[0])
 
-        elif request.form["submit_button"] == "delete":
+        elif request.form["submit_button"] == "stop":
 
-            os.remove(database_path)
-            print("Arquivo deletado: ", database_path)
+            stop_timer_thread()
+            return redirect('/foradeservico')
         
         elif request.form["submit_button"] == "set":
 
@@ -421,42 +363,6 @@ def start():
 def data():
     return render_template('dados.html')
 
-@app.route('/cryptography', methods=['GET', 'POST'])
-def cryptography():
-    if request.method == 'POST':
-        print("Request received on cryptohgraphy!")
-        print("Request form: ", request.files)
-    return render_template('download.html')
-
-@app.route('/encrypter', methods=['GET', 'POST'])
-def encripter():
-    if request.method == 'POST':
-        print("Request received")
-        if 'file' not in request.files:
-            print("No file in request")
-            return render_template('encripter.html', message="Nenhum arquivo foi enviado.")
-            
-        file = request.files['file']
-        print("File received:", file.filename)
-        
-        if file.filename == '':
-            return render_template('encripter.html', message="Nenhum arquivo foi selecionado.")
-        
-        if file:
-            # Save encrypted file
-            save_path = os.path.join(app.root_path, 'dados_encrypted.csv')
-            file.save(save_path)
-            print("File saved to:", save_path)
-            return render_template('encripter.html', message="Arquivo encriptado com sucesso!")
-    else:
-        return send_file('dados_encrypted.csv', mimetype='text/csv')
-    
-    return render_template('encripter.html')
-
-@app.route('/dados.csv')
-def get_csv():
-    return send_file('dados.csv', mimetype='text/csv')
-
 @app.route('/manifest.json')
 def serve_manifest():
     return send_file('manifest.json', mimetype='application/manifest+json')
@@ -464,10 +370,6 @@ def serve_manifest():
 @app.route('/sw.js')
 def serve_sw():
     return send_file('sw.js', mimetype='application/javascript')
-
-
-
-database_sync()
 
 if __name__ == "__main__":
     app.run(debug=True, port="5000", host="0.0.0.0")
