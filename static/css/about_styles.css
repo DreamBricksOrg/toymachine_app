@@ -45,10 +45,10 @@ img {
     display: flex;
     justify-content: center;
     position: absolute;
-    bottom: 3%;
+    bottom: 5%;
 }
 
-@keyframes moveArrow {
+/*@keyframes moveArrow {
     0% {
         transform: translateX(0);
     }
@@ -58,8 +58,9 @@ img {
     100% {
         transform: translateX(0);
     }
-}
+}*/
 
 .arrow img {
+    width:200px;
     animation: moveArrow 1s ease-in-out infinite;
 }
