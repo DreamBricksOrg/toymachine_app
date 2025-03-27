@@ -23,7 +23,17 @@
 
         <h2>Apagar dados</h2>
         <p>Caso seja necessário, é possível apagar os <br>dados já usados para jogar na máquina</p>
-        <button type="submit" name="submit_button" value="delete">Apagar dados</button>
+        <button onclick="openDeletePopup()" type="button">Apagar dados</button>
+
+        <div class="delete-wrapper" id="delete-wrapper">
+            <div class="content">
+                <img src="/static/images/admin/close.svg" alt="close" class="close" onclick="closeDeletePopup()">
+                <h1>ATENÇÃO!</h1>
+                <h3>Você tem certeza?</h3>
+                <p>Esta ação é permanente e não pode ser revertida.</p>
+                <button class="set-datetime" type="submit" name="submit_button" value="delete">Apagar todos os dados</button>
+            </div>
+        </div>
 
         <div class="settings">
             <h2>Configurações</h2>
@@ -64,6 +74,23 @@
 
         window.onclick = function (event) {
             const modal = document.getElementById('datetime-wrapper');
+            if (event.target === modal) {
+                closePopup();
+                closeLoadingPopup();
+            }
+        };
+
+        function openDeletePopup() {
+            console.log("openPopup");
+            document.getElementById("delete-wrapper").style.display = "flex";
+        }
+
+        function closeDeletePopup() {
+            document.getElementById("delete-wrapper").style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('delete-wrapper');
             if (event.target === modal) {
                 closePopup();
                 closeLoadingPopup();
