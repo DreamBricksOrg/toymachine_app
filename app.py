@@ -143,16 +143,7 @@ def existent_cpf(cpf: str) -> bool:
 
 
 @app.route('/', methods=['GET'])  # Call to Action
-def index():
-    try:
-        with open(database_path, "r") as file:
-            data = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        data = None
-
-    if data:
-        json_to_csv(database_path, csv_path)
-    
+def index():    
     return render_template('index.html', data=csv_path)
 
 @app.route('/conheca', methods=['GET'])
@@ -220,7 +211,14 @@ def register():
                 json.dump(data, arquivo, ensure_ascii=False, indent=4)
             message=None
             form_data = None
-            start_game()
+            try:
+                with open(database_path, "r") as file:
+                    data = json.load(file)
+            except (FileNotFoundError, json.JSONDecodeError):
+                data = None
+
+            if data:
+                json_to_csv(database_path, csv_path)
             return redirect('/maquinaliberada')
         else:
             message = "Por favor, insira um número de CPF válido."
@@ -230,7 +228,7 @@ def register():
 
 @app.route('/maquinaliberada')
 def gamestarted():
-
+    start_game()
     moved = start_timer_thread()
     print('Resultado:  ', moved)
 
@@ -253,7 +251,7 @@ def get_json():
 def thanks():
     update_status(0, 0)
     update_status(1, 0)
-    database_sync()
+    # database_sync()
     return render_template('thanks.html'), {"Refresh": "7, url=/"}
 
 @app.route('/foradeservico')
@@ -390,30 +388,28 @@ def cryptography():
         print("Request form: ", request.files)
     return render_template('download.html')
 
-@app.route('/encrypter', methods=['GET', 'POST'])
+@app.route('/encrypter', methods=['POST'])
 def encripter():
+    """
+    Recebe uma linha criptografada e a adiciona ao arquivo dados_encrypted.csv.
+    """
     if request.method == 'POST':
-        print("Request received")
-        if 'file' not in request.files:
-            print("No file in request")
-            return render_template('encripter.html', message="Nenhum arquivo foi enviado.")
-            
-        file = request.files['file']
-        print("File received:", file.filename)
-        
-        if file.filename == '':
-            return render_template('encripter.html', message="Nenhum arquivo foi selecionado.")
-        
-        if file:
-            # Save encrypted file
-            save_path = os.path.join(app.root_path, 'dados_encrypted.csv')
-            file.save(save_path)
-            print("File saved to:", save_path)
-            return render_template('encripter.html', message="Arquivo encriptado com sucesso!")
-    else:
-        return send_file('dados_encrypted.csv', mimetype='text/csv')
-    
-    return render_template('encripter.html')
+        # Verificar se o campo 'line' está presente na requisição
+        print("* * Request received on encrypter!")
+        encrypted_line = request.form.get('line')
+        if not encrypted_line:
+            print("- Nada recebido!")
+            return "<html><body><h1>Erro: Nenhuma linha criptografada enviada!</h1></body></html>", 400
+
+        try:
+            # Adicionar a linha criptografada ao final do arquivo dados_encrypted.csv
+            with open(encrypted_path, "a", encoding="utf-8") as file:
+                file.write(encrypted_line + "\n")
+            print("Linha criptografada adicionada ao arquivo:", encrypted_line)
+            return "<html><body><h1>Linha adicionada com sucesso ao arquivo dados_encrypted.csv!</h1></body></html>", 200
+        except Exception as e:
+            print("Erro ao salvar a linha criptografada:", e)
+            return "<html><body><h1>Erro ao salvar a linha criptografada!</h1></body></html>", 500
 
 @app.route('/dados.csv')
 def get_csv():
