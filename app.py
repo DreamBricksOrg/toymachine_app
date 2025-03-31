@@ -32,25 +32,77 @@ def get_current_datetime():
     return weekday, date, time, iso_datetime
 
 def database_sync():
-    with open(encrypted_path, "r", encoding="utf-8") as f:
-        lines = list(csv.reader(f, delimiter=' '))
-        if lines:
-            date_and_time = get_current_datetime()
-            obj_to_sync = {
-                "status" : "jogou",
-                "project" : "67d358c732f32712b51c5aeb",
-                "additional" : str(lines[-1][0]),
-                "timePlayed" : str(date_and_time[3]).strip(' ')  # Get the ISO formatted datetime
-            }
-            print("Object to sync:", obj_to_sync)
-            try:
-                x = requests.post('https://dbutils.ddns.net/datalog/upload', data=obj_to_sync)
-                print("Data synced:", x.text)
-            except requests.exceptions.RequestException as e:
-                print("Error fetching data:", e)
-                    
+    try:
+        # Obter todos os objetos do servidor
+        response = requests.get('https://dbutils.ddns.net/datalog/getdatabyproject?project=ciclic_vending_machine')
+        response.raise_for_status()
+        server_data = response.json().get("data", [])
+
+        # Extrair todos os valores de "additional" do servidor
+        print("Dados do servidor:", server_data)
+        if not server_data:
+            print("Nenhum dado encontrado no servidor.")
+            server_additional_value = None
+            sync_data = True
         else:
-            print("CSV file is empty")
+            server_additional_value = server_data[-1].get("additional")
+            sync_data = False
+        print("Ultimo valor no servidor:", server_additional_value)
+    except requests.exceptions.RequestException as e:
+        print("Erro ao obter dados do servidor:", e)
+        return
+
+    # Ler o arquivo criptografado
+    try:
+        with open(encrypted_path, "r", encoding="utf-8") as f:
+            lines = list(csv.reader(f, delimiter=' '))
+    except FileNotFoundError:
+        print("Arquivo criptografado não encontrado.")
+        return
+
+    if not lines:
+        print("Arquivo criptografado está vazio.")
+        return
+    
+    if lines[-1][0] == server_additional_value:
+        print("Último valor já sincronizado.")
+        return
+    
+    #print("\n")
+
+    # Iterar pelas linhas e sincronizar os objetos que não estão no servidor
+    for line in lines:
+        print("\n")
+        print("Dado deve ser sincronizado: ", sync_data)
+        if not line:
+            continue
+        additional_value = line[0]
+        """if additional_value in server_additional_value:
+            print(f"Valor '{additional_value}' já sincronizado. Pulando...")
+            continue"""
+
+        # Criar o objeto para sincronizar
+        date_and_time = get_current_datetime()
+        obj_to_sync = {
+            "status": "JOGOU",
+            "project": "67d358c732f32712b51c5aeb",
+            "additional": additional_value,
+            "timePlayed": date_and_time[3]  # ISO formatted datetime
+        }
+        print("Objeto a ser sincronizado:", obj_to_sync)
+
+        # Fazer o POST do objeto
+        """try:
+            post_response = requests.post('https://dbutils.ddns.net/datalog/upload', json=obj_to_sync)
+            post_response.raise_for_status()
+            print("Dados sincronizados com sucesso:", post_response.text)
+        except requests.exceptions.RequestException as e:
+            print("Erro ao sincronizar dados:", e)"""
+        
+        if additional_value == server_additional_value:
+            print("Último valor sincronizado encontrado.")
+            sync_data = True
+
 
 def phone_validator(cellphone: str) -> bool:
 
@@ -144,6 +196,7 @@ def existent_cpf(cpf: str) -> bool:
 
 @app.route('/', methods=['GET'])  # Call to Action
 def index():    
+    database_sync()
     return render_template('index.html', data=csv_path)
 
 @app.route('/conheca', methods=['GET'])
@@ -388,7 +441,7 @@ def cryptography():
         print("Request form: ", request.files)
     return render_template('download.html')
 
-@app.route('/encrypter', methods=['POST'])
+@app.route('/encrypter', methods=['GET','POST'])
 def encripter():
     """
     Recebe uma linha criptografada e a adiciona ao arquivo dados_encrypted.csv.
@@ -410,9 +463,13 @@ def encripter():
         except Exception as e:
             print("Erro ao salvar a linha criptografada:", e)
             return "<html><body><h1>Erro ao salvar a linha criptografada!</h1></body></html>", 500
+    elif request.method == 'GET':
+        #print("Request received on encrypter!")
+        return send_file('dados_encrypted.csv', mimetype='text/csv')
 
 @app.route('/dados.csv')
 def get_csv():
+    print("* *  Request received on dados.csv!")
     return send_file('dados.csv', mimetype='text/csv')
 
 @app.route('/manifest.json')
@@ -424,4 +481,4 @@ def serve_sw():
     return send_file('sw.js', mimetype='application/javascript')
 
 if __name__ == "__main__":
-    app.run(debug=True, port="5000", host="0.0.0.0")
+    app.run(debug=True, port="5000", host="0.0.0.0", ssl_context='adhoc')

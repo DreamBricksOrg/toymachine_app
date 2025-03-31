@@ -65,6 +65,7 @@ async function fetchLastLineFromCSV() {
 }
 
 async function encryptAndSendLastLine() {
+    
     // Obtém a última linha do CSV
     const line = await fetchLastLineFromCSV();
     if (!line) {
