@@ -101,6 +101,6 @@ async function encryptAndSendLastLine() {
 }
 
 // Chama a função para buscar, encriptar e enviar a última linha do CSV
-encryptAndSendLastLine();
+//encryptAndSendLastLine();
 // Chama a função para verificar atualizações no JSON
 checkForStatusUpdates();

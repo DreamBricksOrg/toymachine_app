@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, send_file
+from flask import Flask, render_template, request, redirect, send_file, url_for
+
+from dbcrypt import db_encrypt_string
 from raspberry_handler import start_game, start_timer_thread, stop_timer_thread, update_status
 from data_handler import json_to_csv, get_mountpoint, copy_data
 from datetime import datetime
@@ -6,6 +8,8 @@ import json, csv
 import platform
 import os
 import requests
+
+from rsa_public_key import get_rsa_public_key
 
 app = Flask(__name__)
 system = platform.system()
@@ -22,14 +26,13 @@ elif system == 'Linux':
     encrypted_path = "/home/db/Documents/toymachine_app/dados_encrypted.csv"
     config_path = "/home/db/Documents/toymachine_app/config.json"
     print("System identified: ", system)
-    
+
+
 def get_current_datetime():
-    now = datetime.now()
-    weekday = now.strftime('%A')
-    date = now.strftime('%d/%m/%Y')
-    time = now.strftime('%H:%M:%S')
-    iso_datetime = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-    return weekday, date, time, iso_datetime
+    time_played = datetime.now()
+    formatted_time_played = time_played.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return formatted_time_played
+
 
 def database_sync():
     try:
@@ -63,12 +66,12 @@ def database_sync():
     if not lines:
         print("Arquivo criptografado está vazio.")
         return
-    
+
     if lines[-1][0] == server_additional_value:
         print("Último valor já sincronizado.")
         return
-    
-    #print("\n")
+
+    # print("\n")
 
     # Iterar pelas linhas e sincronizar os objetos que não estão no servidor
     for line in lines:
@@ -82,30 +85,33 @@ def database_sync():
             continue"""
 
         # Criar o objeto para sincronizar
-        date_and_time = get_current_datetime()
+        time_played = datetime.now()
+        formatted_time_played = time_played.strftime("%Y-%m-%dT%H:%M:%SZ")
+        status = "JOGOU"
+        project = "67d358c732f32712b51c5aeb"
+
         obj_to_sync = {
-            "status": "JOGOU",
-            "project": "67d358c732f32712b51c5aeb",
-            "additional": additional_value,
-            "timePlayed": date_and_time[3]  # ISO formatted datetime
+            'status': status,
+            'project': project,
+            'additional': additional_value,
+            'timePlayed': formatted_time_played
         }
         print("Objeto a ser sincronizado:", obj_to_sync)
 
         # Fazer o POST do objeto
-        """try:
-            post_response = requests.post('https://dbutils.ddns.net/datalog/upload', json=obj_to_sync)
+        try:
+            post_response = requests.post('https://dbutils.ddns.net/datalog/upload', data=obj_to_sync)
             post_response.raise_for_status()
             print("Dados sincronizados com sucesso:", post_response.text)
         except requests.exceptions.RequestException as e:
-            print("Erro ao sincronizar dados:", e)"""
-        
+            print("Erro ao sincronizar dados:", e)
+
         if additional_value == server_additional_value:
             print("Último valor sincronizado encontrado.")
             sync_data = True
 
 
 def phone_validator(cellphone: str) -> bool:
-
     streak = 0
 
     numbers = [int(digit) for digit in cellphone if digit.isdigit()]
@@ -114,7 +120,7 @@ def phone_validator(cellphone: str) -> bool:
         return False
 
     print("Streak testada: ", streak)
-    
+
     if streak >= 10:
         return False
     else:
@@ -122,7 +128,6 @@ def phone_validator(cellphone: str) -> bool:
 
 
 def cpf_validator(cpf: str) -> bool:
-
     """ Efetua a validação do CPF, tanto formatação quando dígito verificadores.
 
     Parâmetros:
@@ -156,18 +161,19 @@ def cpf_validator(cpf: str) -> bool:
         return False
 
     # Validação do primeiro dígito verificador:
-    sum_of_products = sum(a*b for a, b in zip(numbers[0:9], range(10, 1, -1)))
+    sum_of_products = sum(a * b for a, b in zip(numbers[0:9], range(10, 1, -1)))
     expected_digit = (sum_of_products * 10 % 11) % 10
     if numbers[9] != expected_digit:
         return False
 
     # Validação do segundo dígito verificador:
-    sum_of_products = sum(a*b for a, b in zip(numbers[0:10], range(11, 1, -1)))
+    sum_of_products = sum(a * b for a, b in zip(numbers[0:10], range(11, 1, -1)))
     expected_digit = (sum_of_products * 10 % 11) % 10
     if numbers[10] != expected_digit:
         return False
 
     return True
+
 
 def existent_cpf(cpf: str) -> bool:
     print("Verificando CPF...")
@@ -190,22 +196,25 @@ def existent_cpf(cpf: str) -> bool:
             return True
         else:
             print("Nenhum CPF igual foi encontrado.")
-        
+
     return False
 
 
 @app.route('/', methods=['GET'])  # Call to Action
-def index():    
+def index():
     database_sync()
     return render_template('index.html', data=csv_path)
+
 
 @app.route('/conheca', methods=['GET'])
 def about():
     return render_template('about.html')
 
+
 @app.route('/protecoes', methods=['GET'])
 def products():
     return render_template('products.html')
+
 
 @app.route('/cadastro', methods=['GET', 'POST'])
 def register():
@@ -259,10 +268,11 @@ def register():
             message = "Por favor, insira um número de celular válido."
             error = "Celular"
         elif cpf_validator(cpf) == True and existent_cpf(cpf) == False and phone_validator(cellphone) == True:
-            data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections, 'Hora': play_datetime[2], 'Data': play_datetime[1]})
+            data.append({'Nome': name, 'Email': email, 'Telefone': cellphone, 'CPF': cpf, 'Protecoes': protections,
+                         'Hora': play_datetime[2], 'Data': play_datetime[1]})
             with open(database_path, "w", encoding="utf-8") as arquivo:
                 json.dump(data, arquivo, ensure_ascii=False, indent=4)
-            message=None
+            message = None
             form_data = None
             try:
                 with open(database_path, "r") as file:
@@ -279,26 +289,30 @@ def register():
 
     return render_template('register.html', message=message, form_data=form_data, form_error=error)
 
+
 @app.route('/maquinaliberada')
 def gamestarted():
     start_game()
+    encrypt_and_send_last_line()
     moved = start_timer_thread()
     print('Resultado:  ', moved)
 
     return render_template('gamestarted.html')
 
+
 @app.route('/timer')
 def timer():
-
     playtime = 45
     pressed = stop_timer_thread()
     print('Resultado: ', pressed)
-    
+
     return render_template('timer.html', playtime=playtime)
+
 
 @app.route('/file.json')
 def get_json():
     return send_file('config.json', mimetype='application/json')
+
 
 @app.route('/obrigado')
 def thanks():
@@ -307,13 +321,14 @@ def thanks():
     # database_sync()
     return render_template('thanks.html'), {"Refresh": "7, url=/"}
 
+
 @app.route('/foradeservico')
 def oos():
     return render_template('oos.html')
 
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
-
     system = platform.system()
 
     if system == 'Windows':
@@ -326,8 +341,8 @@ def admin():
     devices = "home/db/Documents/toymachine_app/db.json"
     for device in devices:
         alias = device.rsplit('/', 1)
-        #print("Alias", alias)
-        #print(alias[-1])
+        # print("Alias", alias)
+        # print(alias[-1])
         if alias[-1]:
             aliases.append(alias[-1])
 
@@ -335,7 +350,7 @@ def admin():
         alias = None
     elif aliases:
         alias = aliases[0]
-    
+
     print(aliases)
 
     # Carrega o conteúdo do arquivo JSON
@@ -351,8 +366,8 @@ def admin():
     date_formmater = now[1].split('/')
     datetime_command = date_formmater[-1] + "/" + date_formmater[1] + "/" + date_formmater[0] + " " + now[2]
 
-    #print("Current datetime: ", now)
-    #print("Datetime update command: ", datetime_command)
+    # print("Current datetime: ", now)
+    # print("Datetime update command: ", datetime_command)
 
     if request.method == 'POST':
 
@@ -367,13 +382,13 @@ def admin():
                         data = [data]
             except (FileNotFoundError, json.JSONDecodeError):
                 data = []
-            
+
             data.append({'Nome': "Admin", 'Email': "admin", 'Telefone': "None", 'CPF': "None", 'Protecoes': "None"})
             with open(database_path, "w", encoding="utf-8") as arquivo:
                 json.dump(data, arquivo, ensure_ascii=False, indent=4)
             start_game()
             return redirect('/maquinaliberada')
-        
+
         elif request.form["submit_button"] == "copy":
 
             json_to_csv(database_path, csv_path)
@@ -385,21 +400,21 @@ def admin():
 
             os.remove(database_path)
             print("Arquivo deletado: ", database_path)
-        
+
         elif request.form["submit_button"] == "set":
 
             inactivity_timer = request.form['inactivity']
-            
+
             # Atualiza o valor da chave "status"
             data["inactivity_time"] = int(inactivity_timer) * 1000
-            
+
             # Salva o arquivo JSON com o novo valor
             with open(config_path, "w") as file:
                 json.dump(data, file, indent=4)
                 file.flush()
 
             return redirect('/admin')
-        
+
         elif request.form["submit_button"] == "setdatetime":
 
             print("Definir hora")
@@ -426,13 +441,16 @@ def admin():
 
     return render_template('admin.html', devices=alias, inactivity_timer=current_inactivity, current_datetime=now)
 
+
 @app.route('/start')
 def start():
     return redirect('/timer')
 
+
 @app.route('/dados')
 def data():
     return render_template('dados.html')
+
 
 @app.route('/cryptography', methods=['GET', 'POST'])
 def cryptography():
@@ -441,8 +459,9 @@ def cryptography():
         print("Request form: ", request.files)
     return render_template('download.html')
 
-@app.route('/encrypter', methods=['GET','POST'])
-def encripter():
+
+@app.route('/encrypter', methods=['GET', 'POST'])
+def encrypter():
     """
     Recebe uma linha criptografada e a adiciona ao arquivo dados_encrypted.csv.
     """
@@ -467,18 +486,81 @@ def encripter():
         #print("Request received on encrypter!")
         return send_file('dados_encrypted.csv', mimetype='text/csv')
 
+
 @app.route('/dados.csv')
 def get_csv():
     print("* *  Request received on dados.csv!")
     return send_file('dados.csv', mimetype='text/csv')
 
+
 @app.route('/manifest.json')
 def serve_manifest():
     return send_file('manifest.json', mimetype='application/manifest+json')
+
 
 @app.route('/sw.js')
 def serve_sw():
     return send_file('sw.js', mimetype='application/javascript')
 
+
+def encrypt_and_send_last_line():
+    # Obtém a última linha do CSV
+    line = fetch_last_line_from_csv()
+    if not line:
+        print('Nenhuma linha válida encontrada no CSV.')
+        return
+
+    # Encripta a linha usando a chave pública RSA
+    rsa_public_key = get_rsa_public_key()
+    data_encrypted = db_encrypt_string(line, rsa_public_key)
+
+    # Cria o payload para o POST
+    payload = {
+        'line': data_encrypted
+    }
+
+    print('Linha encriptada:', data_encrypted)
+
+    try:
+
+        url_encrypt = url_for('encrypter', _external=True)
+        # Faz o POST no endpoint /encrypter
+        response = requests.post(url_encrypt, data=payload)
+
+        if response.ok:
+            print('Linha encriptada enviada com sucesso:', data_encrypted)
+        else:
+            print('Erro ao enviar a linha encriptada:', response.status_code, response.text)
+    except Exception as e:
+        print('Erro na requisição de salvamento:', e)
+
+
+def fetch_last_line_from_csv():
+    try:
+        url = url_for('get_csv', _external=True)
+        response = requests.get(url, headers={'Cache-Control': 'no-cache'})
+
+        if not response.ok:
+            print('Erro ao buscar o arquivo CSV:', response.status_code)
+            return None
+
+        # Obtém o conteúdo do CSV como texto
+        csv_text = response.text
+
+        # Divide o conteúdo em linhas e obtém a última linha não vazia
+        lines = [line for line in csv_text.split('\n') if line.strip() != '']
+        if not lines:
+            print('O arquivo CSV está vazio.')
+            return None
+
+        last_line = lines[-1]
+        print('Última linha do CSV:', last_line)
+        return last_line
+
+    except Exception as e:
+        print('Erro ao buscar a última linha do CSV:', e)
+        return None
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port="5000", host="0.0.0.0", ssl_context='adhoc')
+    app.run(debug=True, port=5000, host="0.0.0.0")
